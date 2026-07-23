@@ -50,8 +50,9 @@
       display:grid;grid-template-columns:1fr 1fr;grid-template-rows:13% 34% 24% 22% 7%;
       overflow:hidden;transform-origin:top center;box-shadow:0 3px 20px #0002;
     }
-    .title{grid-column:1/3;border-bottom:3px solid #111;display:flex;align-items:center;justify-content:center;
-      font-size:44px;font-weight:900;text-transform:uppercase;text-align:center;padding:8px}
+    .title{grid-column:1/3;border-bottom:3px solid #111;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;font-size:44px;font-weight:900;text-transform:uppercase;text-align:center;padding:8px 14px}
+    .titleText{min-width:0;overflow:hidden;white-space:nowrap;text-align:center}
+    .qualityLogos{display:flex;gap:8px;align-items:center}.qualityLogo{width:58px;height:58px;object-fit:contain;display:none}
     .photo{grid-column:1/2;grid-row:2/4;border-right:3px solid #111;display:flex;align-items:center;justify-content:center;
       overflow:hidden;background:#fafafa;position:relative}
     .photo img{width:100%;height:100%;object-fit:cover}
@@ -60,12 +61,14 @@
     .unitTop{font-size:26px;font-weight:900;color:var(--red);margin-bottom:2px}
     .price{font-size:105px;line-height:.9;font-weight:900;color:var(--red)}
     .promo{grid-column:2/3;grid-row:3/4;border-top:3px solid #111;display:flex;flex-direction:column;align-items:center;justify-content:center}
-    .promoLabel{font-size:30px;font-weight:900;color:var(--red)}
+    .promoLabel{font-size:30px;font-weight:900;color:var(--red);max-width:95%;text-align:center;line-height:1.05;overflow:hidden}
     .promoPrice{font-size:82px;line-height:.95;font-weight:900;color:var(--red)}
     .promoUnit{font-size:17px;font-weight:700;margin-top:4px}
     .origin{grid-column:1/3;grid-row:4/5;border-top:3px solid #111;display:grid;grid-template-rows:auto 1fr}
     .originLabel{font-size:25px;font-weight:900;padding:8px 12px;border-bottom:2px solid #111}
-    .originValue{display:flex;align-items:center;justify-content:center;font-size:92px;line-height:1;font-weight:900;text-transform:uppercase;padding:5px;text-align:center}
+    .originValue{display:flex;align-items:center;justify-content:center;gap:14px;font-size:92px;line-height:1;font-weight:900;text-transform:uppercase;padding:5px 12px;text-align:center;white-space:nowrap;overflow:hidden}
+    .originText{display:inline-block;transform-origin:center center}.frFlag{width:76px;height:50px;border:2px solid #111;display:none;flex:none;background:linear-gradient(90deg,#0055a4 0 33.33%,#fff 33.33% 66.66%,#ef4135 66.66% 100%)}
+    .check-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:7px}.check-row label{display:flex;align-items:center;gap:7px;font-size:14px;color:#111}.check-row input{width:auto;margin:0;transform:scale(1.2)}
     .legal{grid-column:1/3;grid-row:5/6;border-top:3px solid #111;display:grid;grid-template-columns:1fr 1fr 2fr}
     .legal>div{display:flex;align-items:center;justify-content:center;text-align:center;font-size:15px;font-weight:800;padding:6px;border-right:2px solid #111}
     .legal>div:last-child{border-right:0}
@@ -119,20 +122,27 @@
         <div class="form-grid">
           <label>Désignation<input id="name" placeholder="AVOCAT HASS"></label>
           <label>Sous-titre / variété<input id="subtitle" placeholder="Variété Hass"></label>
-          <label>Mode de vente
-            <select id="saleMode">
-              <option>Pièce</option><option>kg</option><option>Lot</option><option>Barquette</option><option>Filet</option>
-            </select>
+          <label class="full">Mode de vente
+            <div class="check-row">
+              <label><input id="saleKg" type="checkbox"> Au kg</label>
+              <label><input id="salePiece" type="checkbox" checked> À la pièce</label>
+            </div>
           </label>
           <label>Prix principal (€)<input id="mainPrice" type="number" step="0.01" placeholder="1.20"></label>
           <label>Mention promotion<input id="promoLabel" placeholder="LES 3"></label>
+          <label>Quantité promotionnelle<input id="promoQty" type="number" step="1" min="1" placeholder="3"></label>
           <label>Prix promotion (€)<input id="promoPrice" type="number" step="0.01" placeholder="2.95"></label>
-          <label>Prix unitaire indicatif (€)<input id="unitPrice" type="number" step="0.01" placeholder="0.98"></label>
-          <label>Unité indicative<input id="unitName" placeholder="pièce"></label>
           <label>Origine<input id="origin" placeholder="PÉROU"></label>
           <label>Catégorie<input id="category" placeholder="1"></label>
           <label>Calibre<input id="caliber" placeholder="18/22"></label>
           <label>Traitement<input id="treatment" placeholder="Non traité après récolte"></label>
+          <label class="full">Labels qualité
+            <div class="check-row">
+              <label><input id="logoIGP" type="checkbox"> IGP</label>
+              <label><input id="logoAOP" type="checkbox"> AOP</label>
+              <label><input id="logoLR" type="checkbox"> Label Rouge</label>
+            </div>
+          </label>
           <label class="full">Photo du produit
             <input id="photoFile" type="file" accept="image/*" capture="environment">
           </label>
@@ -171,7 +181,14 @@
       <div class="card">
         <div class="poster-shell">
           <div class="poster" id="poster">
-            <div class="title" id="pName">AVOCAT HASS</div>
+            <div class="title">
+              <div class="titleText" id="pName">AVOCAT HASS</div>
+              <div class="qualityLogos">
+                <img id="pLogoIGP" class="qualityLogo" src="logo-igp.svg" alt="IGP">
+                <img id="pLogoAOP" class="qualityLogo" src="logo-aop.svg" alt="AOP">
+                <img id="pLogoLR" class="qualityLogo" src="logo-label-rouge.svg" alt="Label Rouge">
+              </div>
+            </div>
             <div class="photo"><img id="pPhoto" alt="" hidden><div id="pPlaceholder" class="placeholder">PHOTO DU PRODUIT</div></div>
             <div class="mainprice">
               <div class="unitTop" id="pUnit">€ / PIÈCE</div>
@@ -184,7 +201,7 @@
             </div>
             <div class="origin">
               <div class="originLabel">ORIGINE</div>
-              <div class="originValue" id="pOrigin">PÉROU</div>
+              <div class="originValue"><span id="frFlag" class="frFlag"></span><span class="originText" id="pOrigin">PÉROU</span></div>
             </div>
             <div class="legal">
               <div id="pCategory">CATÉGORIE : 1</div>
@@ -212,7 +229,7 @@
 
 <script>
 const $ = id => document.getElementById(id);
-const fields = ["name","subtitle","saleMode","mainPrice","promoLabel","promoPrice","unitPrice","unitName","origin","category","caliber","treatment","photoUrl"];
+const fields = ["name","subtitle","mainPrice","promoLabel","promoQty","promoPrice","origin","category","caliber","treatment","photoUrl"];
 let products = JSON.parse(localStorage.getItem("affiches-products") || "[]");
 let selected = -1;
 let photoData = "";
@@ -221,26 +238,22 @@ function euro(v){
   const n = Number(v);
   return Number.isFinite(n) ? n.toFixed(2).replace(".",",") : "";
 }
-function modeLabel(mode){
-  const m=(mode||"").toLowerCase();
-  if(m==="kg") return "€ / KG";
-  if(m==="pièce") return "€ / PIÈCE";
-  if(m==="barquette") return "€ / BARQUETTE";
-  if(m==="filet") return "€ / FILET";
-  return "€";
-}
+function getSaleMode(){return $("saleKg").checked?"kg":"piece"}
+function modeLabel(mode){return mode==="kg"?"€ / KG":"€ / PIÈCE"}
 function readForm(){
   const o={}; fields.forEach(f=>o[f]=$(f).value.trim());
+  o.saleMode=getSaleMode(); o.logoIGP=$("logoIGP").checked; o.logoAOP=$("logoAOP").checked; o.logoLR=$("logoLR").checked;
   o.photo = photoData || $("photoUrl").value.trim();
   return o;
 }
 function writeForm(o={}){
-  fields.forEach(f=>$(f).value=o[f] ?? (f==="saleMode"?"Pièce":""));
+  fields.forEach(f=>$(f).value=o[f] ?? "");
+  $("saleKg").checked=o.saleMode==="kg"; $("salePiece").checked=o.saleMode!=="kg";
+  $("logoIGP").checked=!!o.logoIGP; $("logoAOP").checked=!!o.logoAOP; $("logoLR").checked=!!o.logoLR;
   photoData=o.photo && o.photo.startsWith("data:") ? o.photo : "";
-  $("photoFile").value="";
-  updatePreview();
+  $("photoFile").value=""; updatePreview();
 }
-function newProduct(){selected=-1;writeForm({saleMode:"Pièce",unitName:"pièce"});showTab("dataPanel");renderList()}
+function newProduct(){selected=-1;writeForm({saleMode:"piece"});showTab("dataPanel");renderList()}
 function saveCurrent(){
   const o=readForm();
   if(!o.name){alert("Indiquez la désignation du produit.");return}
@@ -265,6 +278,15 @@ function renderList(){
       <td><button class="mini dark" onclick="selectProduct(${i})">Ouvrir</button></td>
     </tr>`).join("") || `<tr><td colspan="4">Aucun produit enregistré.</td></tr>`;
 }
+function fitOrigin(){
+  const el=$("pOrigin"); el.style.transform="scaleX(1)";
+  requestAnimationFrame(()=>{const max=el.parentElement.clientWidth-120; const s=Math.min(1,max/Math.max(1,el.scrollWidth)); el.style.transform=`scaleX(${Math.max(.35,s)})`;});
+}
+function fitPromo(){
+  const el=$("pPromoLabel"); let size=54; el.style.fontSize=size+"px";
+  requestAnimationFrame(()=>{const maxW=el.parentElement.clientWidth*.9,maxH=el.parentElement.clientHeight*.25;
+    while(size>18&&(el.scrollWidth>maxW||el.scrollHeight>maxH)){size-=2;el.style.fontSize=size+"px";}});
+}
 function updatePreview(){
   const o=readForm();
   $("pName").textContent=(o.name||"DÉSIGNATION").toUpperCase();
@@ -272,14 +294,13 @@ function updatePreview(){
   $("pMainPrice").textContent=euro(o.mainPrice)||"0,00";
   $("pPromoLabel").textContent=(o.promoLabel||"").toUpperCase();
   $("pPromoPrice").textContent=o.promoPrice?euro(o.promoPrice)+" €":"";
-  $("pUnitPrice").textContent=o.unitPrice?`Soit ${euro(o.unitPrice)} € / ${o.unitName||"pièce"}`:"";
-  $("pOrigin").textContent=(o.origin||"ORIGINE").toUpperCase();
-  $("pCategory").textContent=o.category?`CATÉGORIE : ${o.category}`:"";
-  $("pCaliber").textContent=o.caliber?`CALIBRE : ${o.caliber}`:"";
-  $("pTreatment").textContent=o.treatment?`TRAITEMENT : ${o.treatment}`:"";
-  const src=photoData || o.photoUrl;
-  $("pPhoto").hidden=!src; $("pPlaceholder").hidden=!!src;
-  if(src)$("pPhoto").src=src;
+  let txt=""; if(o.promoPrice&&o.promoQty){const u=Number(o.promoPrice)/Number(o.promoQty);if(Number.isFinite(u))txt=`Soit ${euro(u)} € / ${o.saleMode==="kg"?"kg":"pièce"}`;}
+  $("pUnitPrice").textContent=txt;
+  const origin=(o.origin||"ORIGINE").toUpperCase(); $("pOrigin").textContent=origin; $("frFlag").style.display=origin==="FRANCE"?"inline-block":"none";
+  $("pCategory").textContent=o.category?`CATÉGORIE : ${o.category}`:""; $("pCaliber").textContent=o.caliber?`CALIBRE : ${o.caliber}`:""; $("pTreatment").textContent=o.treatment?`TRAITEMENT : ${o.treatment}`:"";
+  $("pLogoIGP").style.display=o.logoIGP?"block":"none"; $("pLogoAOP").style.display=o.logoAOP?"block":"none"; $("pLogoLR").style.display=o.logoLR?"block":"none";
+  const src=photoData||o.photoUrl; $("pPhoto").hidden=!src; $("pPlaceholder").hidden=!!src; if(src)$("pPhoto").src=src;
+  fitPromo(); fitOrigin();
 }
 function showTab(id){
   document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===id));
@@ -287,6 +308,12 @@ function showTab(id){
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 fields.forEach(f=>$(f).addEventListener("input",updatePreview));
+["saleKg","salePiece"].forEach(id=>$(id).addEventListener("change",()=>{
+  if(id==="saleKg"&&$("saleKg").checked)$("salePiece").checked=false;
+  if(id==="salePiece"&&$("salePiece").checked)$("saleKg").checked=false;
+  if(!$("saleKg").checked&&!$("salePiece").checked)$("salePiece").checked=true; updatePreview();
+}));
+["logoIGP","logoAOP","logoLR"].forEach(id=>$(id).addEventListener("change",updatePreview));
 $("photoFile").addEventListener("change",e=>{
   const file=e.target.files[0]; if(!file)return;
   const r=new FileReader(); r.onload=()=>{photoData=r.result;updatePreview()}; r.readAsDataURL(file);
@@ -306,7 +333,7 @@ function clearAll(){if(confirm("Effacer tous les produits enregistrés ?")){prod
 function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
 if(products.length){selected=0;writeForm(products[0])}else{
-  writeForm({name:"AVOCAT HASS",saleMode:"Pièce",mainPrice:"1.20",promoLabel:"LES 3",promoPrice:"2.95",unitPrice:"0.98",unitName:"pièce",origin:"PÉROU",category:"1",caliber:"18/22",treatment:"Non traité après récolte"});
+  writeForm({name:"AVOCAT HASS",saleMode:"piece",mainPrice:"1.20",promoLabel:"LES 3",promoQty:"3",promoPrice:"2.95",origin:"PÉROU",category:"1",caliber:"18/22",treatment:"Non traité après récolte"});
 }
 renderList();
 
