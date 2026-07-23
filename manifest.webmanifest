@@ -3,9 +3,8 @@
   "short_name": "Affiches",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#111111",
-  "orientation": "portrait",
+  "background_color": "#f4f7f5",
+  "theme_color": "#08742f",
   "icons": [
     {
       "src": "icon.svg",

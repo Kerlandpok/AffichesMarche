@@ -1,20 +1,20 @@
-AFFICHES MARCHÉ — VERSION ANDROID (PWA)
+AFFICHES MARCHÉ V3
 
-Installation :
-1. Décompresser le fichier ZIP.
-2. Mettre les fichiers sur GitHub Pages, Firebase Hosting ou un hébergement web HTTPS.
-3. Ouvrir l'adresse avec Google Chrome sur Android.
-4. Menu Chrome > Installer l'application / Ajouter à l'écran d'accueil.
+Fichiers à envoyer à la racine du dépôt GitHub AffichesMarche :
+- index.html
+- manifest.webmanifest
+- icon.svg
+- sw.js
+- logo-igp-officiel.jpg
+- logo-aop-officiel.jpg
+- logo-label-rouge-officiel.png
 
-Fonctions :
-- création et modification de produits ;
-- photo depuis l'appareil photo ou la galerie ;
-- aperçu immédiat de l'affiche ;
-- sauvegarde locale sur le téléphone ou la tablette ;
-- export/import des produits ;
-- impression et création d'un PDF ;
-- fonctionnement hors connexion après la première ouverture.
-
-Important :
-L'installation PWA exige une adresse HTTPS. Ouvrir directement index.html fonctionne pour tester,
-mais l'option d'installation peut ne pas apparaître.
+Cette version comprend :
+- design blanc et vert ;
+- textes noirs ;
+- vrais logos officiels IGP, AOP et Label Rouge fournis par l'INAO ;
+- drapeau français placé à droite de FRANCE ;
+- réduction horizontale de l'origine uniquement lorsque nécessaire ;
+- prix affiché avec le symbole € à la place de la virgule : 3€00 ;
+- promotion par lot avec calcul automatique du prix de revient au kg ou à la pièce ;
+- sauvegarde locale, import/export JSON, photo et impression PDF.
