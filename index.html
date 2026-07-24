@@ -262,10 +262,19 @@ let selected = -1;
 let photoData = "";
 
 const imageLibrary = [
-  ["Pomme","images/pomme.svg"],["Poire","images/poire.svg"],["Banane","images/banane.svg"],["Orange","images/orange.svg"],
-  ["Citron","images/citron.svg"],["Fraise","images/fraise.svg"],["Tomate","images/tomate.svg"],["Avocat","images/avocat.svg"],
-  ["Carotte","images/carotte.svg"],["Courgette","images/courgette.svg"],["Aubergine","images/aubergine.svg"],
-  ["Poivron","images/poivron.svg"],["Pomme de terre","images/pomme-de-terre.svg"]
+  ["Pomme","https://commons.wikimedia.org/wiki/Special:Redirect/file/Apple-001.jpg?width=960"],
+  ["Poire","https://commons.wikimedia.org/wiki/Special:Redirect/file/Rocha_Pear_2017_B2.jpg?width=960"],
+  ["Banane","https://commons.wikimedia.org/wiki/Special:Redirect/file/Banana_on_white_background.jpg?width=960"],
+  ["Orange","https://commons.wikimedia.org/wiki/Special:Redirect/file/Orange-fruit-2.jpg?width=960"],
+  ["Citron","https://commons.wikimedia.org/wiki/Special:Redirect/file/Lemon-Whole-Split.jpg?width=960"],
+  ["Fraise","https://commons.wikimedia.org/wiki/Special:Redirect/file/Strawberries-1239306.jpg?width=960"],
+  ["Cerise","https://commons.wikimedia.org/wiki/Special:Redirect/file/Cherry_fruit_on_white_background.jpg?width=960"],
+  ["Kiwi","https://commons.wikimedia.org/wiki/Special:Redirect/file/Whole_kiwifruit_on_white_background.jpg?width=960"],
+  ["Tomate","https://commons.wikimedia.org/wiki/Special:Redirect/file/Tomato_(1).jpg?width=960"],
+  ["Carotte","https://commons.wikimedia.org/wiki/Special:Redirect/file/Carrot_vegetable_on_white_background.jpg?width=960"],
+  ["Courgette","https://commons.wikimedia.org/wiki/Special:Redirect/file/Zucchini-Whole.jpg?width=960"],
+  ["Poivron rouge","https://commons.wikimedia.org/wiki/Special:Redirect/file/Red-Pepper.jpg?width=960"],
+  ["Pomme de terre","https://commons.wikimedia.org/wiki/Special:Redirect/file/Agriculture-72254.jpg?width=960"]
 ];
 let selectedLibraryImage = "";
 function applyImageToPoster(src,name=""){
@@ -447,7 +456,7 @@ function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;",
 
 renderLibrary();
 if(products.length){selected=0;writeForm(products[0])}else{
-  writeForm({name:"AVOCAT HASS",saleMode:"piece",mainPrice:"1.00",promoType:"bundle",promoLabel:"LES 2",promoQty:"2",promoPrice:"1.50",origin:"PÉROU",category:"1",caliber:"18/22",treatment:"Non traité après récolte",photoUrl:"images/avocat.svg"});
+  writeForm({name:"TOMATE",saleMode:"kg",mainPrice:"2.99",promoType:"none",origin:"FRANCE",category:"1",caliber:"",treatment:"",photoUrl:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Tomato_(1).jpg?width=960"});
 }
 renderList();
 

@@ -1,19 +1,13 @@
-AFFICHES MARCHÉ — V2 PROMOS + IMAGES INTÉGRABLES
+AFFICHES MARCHÉ — V2 VRAIES PHOTOS
 
-Cette version conserve le visuel V2 et ajoute :
-- clic sur une image de la bibliothèque = insertion immédiate sur l'affiche ;
-- bouton « Intégrer l’image sélectionnée à l’affiche » ;
-- photo personnelle intégrée immédiatement après sélection ;
-- conservation de l'image lors de l'enregistrement d'un produit ;
-- bibliothèque toujours visible, même après réouverture d'un produit enregistré ;
-- gestion d'erreur si une image manque ;
-- promotions automatiques conservées.
+Cette version conserve le générateur et le visuel V2 avec :
+- vraies photographies de fruits et légumes ;
+- toucher une photo = intégration immédiate sur l'affiche ;
+- photo personnelle toujours disponible ;
+- promotions automatiques 2+1 offert, 3+1 offert, X+Y offert ;
+- lots à prix spécial, par exemple 1 € pièce / 1,50 € les 2 ;
+- calcul automatique du prix de revient au kg ou à la pièce.
 
-Pour GitHub, remplacez les fichiers existants par tout le contenu de ce ZIP,
-y compris le dossier images.
-
-
-CORRECTIF IMAGES
-- Correction du format XML des images SVG de la bibliothèque.
-- Nouvelle version du cache pour forcer l'actualisation sur Android.
-- Remplacer impérativement le dossier images ET le fichier sw.js sur GitHub.
+Pour mettre à jour GitHub :
+remplacez index.html et sw.js et ajoutez CREDITS_PHOTOS.txt.
+L'ancien dossier images contenant les dessins peut être supprimé.
