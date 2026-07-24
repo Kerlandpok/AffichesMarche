@@ -16,3 +16,22 @@ CORRECTIF BIBLIOTHÈQUE PHOTO
 - la bibliothèque est rechargée immédiatement après l'ajout ;
 - la nouvelle photo apparaît en tête de bibliothèque ;
 - message de confirmation après compression et enregistrement.
+
+
+NOUVEAU : BIBLIOTHÈQUE PAR FAMILLES
+- bouton dédié pour ouvrir la bibliothèque complète ;
+- création de familles/dossiers personnalisés ;
+- renommage et suppression des familles ;
+- déplacement d'une photo vers une autre famille ;
+- dossiers Toutes les images et Non classées ;
+- sélection rapide d'une famille depuis la page principale ;
+- tri alphabétique automatique dans chaque famille ;
+- recherche par nom dans la bibliothèque.
+
+
+LOGOS OFFICIELS SIQO
+- IGP : fichier officiel téléchargé depuis l'INAO.
+- AOP : fichier officiel téléchargé depuis l'INAO.
+- Label Rouge : fichier officiel téléchargé depuis l'INAO.
+- Les logos sont intégrés localement dans l'application et fonctionnent hors connexion.
+- Le fonctionnement reste identique : cocher IGP, AOP ou Label Rouge pour afficher le logo à droite de la désignation.

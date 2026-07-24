@@ -52,7 +52,7 @@
     }
     .title{grid-column:1/3;border-bottom:3px solid #111;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;font-size:44px;font-weight:900;text-transform:uppercase;text-align:center;padding:8px 14px}
     .titleText{min-width:0;overflow:hidden;white-space:nowrap;text-align:center}
-    .qualityLogos{display:flex;gap:8px;align-items:center}.qualityLogo{width:58px;height:58px;object-fit:contain;display:none}
+    .qualityLogos{display:flex;gap:8px;align-items:center}.qualityLogo{width:62px;height:62px;object-fit:contain;display:none;background:#fff}
     .photo{grid-column:1/2;grid-row:2/4;border-right:3px solid #111;display:flex;align-items:center;justify-content:center;
       overflow:hidden;background:#fafafa;position:relative}
     .photo img{width:100%;height:100%;object-fit:cover}
@@ -110,6 +110,34 @@
     .library-actions .delete{background:#fff1f1;color:#b00000;border:1px solid #ffcaca}
     .library-badge{position:absolute;top:4px;left:4px;background:#111;color:#fff;border-radius:999px;padding:2px 6px;font-size:9px;font-weight:800}
     .library-info{margin-top:8px;font-size:12px;color:#666}
+
+    .library-launch{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .library-modal{position:fixed;inset:0;background:#0008;z-index:1000;display:none;align-items:center;justify-content:center;padding:14px}
+    .library-modal.open{display:flex}
+    .library-window{width:min(1100px,96vw);max-height:92vh;background:#fff;border-radius:16px;display:grid;grid-template-columns:240px 1fr;overflow:hidden;box-shadow:0 20px 60px #0005}
+    .library-sidebar{border-right:1px solid #ddd;padding:14px;overflow:auto;background:#fafafa}
+    .library-content{padding:14px;overflow:auto}
+    .library-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
+    .folder-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+    .folder-btn{width:100%;text-align:left;padding:9px 10px;border:1px solid #ddd;background:#fff;border-radius:9px;font-weight:700}
+    .folder-btn.active{background:#111;color:#fff;border-color:#111}
+    .folder-actions{display:flex;gap:6px;margin-top:8px}
+    .folder-actions button{flex:1;font-size:11px;padding:7px}
+    .family-select{width:100%;margin:0}
+    .library-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .library-toolbar input,.library-toolbar select{min-width:180px}
+    .modal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+    .modal-item{border:1px solid #ddd;border-radius:12px;padding:8px;background:#fff}
+    .modal-item img{width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:8px;background:#fafafa}
+    .modal-item .name{font-weight:800;font-size:12px;margin:6px 0;word-break:break-word}
+    .modal-item .small-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+    .modal-item .small-actions button{font-size:10px;padding:6px}
+    .modal-item .family-chip{font-size:10px;color:#666;margin-bottom:6px}
+    @media(max-width:760px){
+      .library-window{grid-template-columns:1fr;max-height:95vh}
+      .library-sidebar{border-right:0;border-bottom:1px solid #ddd;max-height:230px}
+    }
+
 </style>
 </head>
 <body>
@@ -177,13 +205,16 @@
           </label>
           <label class="full">Ou URL de la photo<input id="photoUrl" placeholder="https://..."></label>
           <div class="full">
-            <label>Bibliothèque d’images intégrée</label>
-            <div id="libraryGrid" class="library-grid"></div>
-            <div id="imageChoiceStatus" class="hint" style="margin-top:8px">Touchez une image pour l’intégrer directement à l’affiche.</div>
+            <label>Bibliothèque d’images</label>
+            <div class="library-launch">
+              <button type="button" id="openLibraryBtn">📁 Ouvrir la bibliothèque</button>
+              <select id="familyQuickSelect" class="family-select"></select>
+            </div>
+            <div id="quickFamilyGrid" class="library-grid"></div>
+            <div id="imageChoiceStatus" class="hint" style="margin-top:8px">Choisissez une famille ou ouvrez la bibliothèque complète.</div>
             <div id="libraryInfo" class="library-info"></div>
             <button type="button" class="green" id="applyLibraryImage" style="margin-top:8px;width:100%;display:none">Intégrer l’image sélectionnée à l’affiche</button>
           </div>
-        </div>
         <div class="actions">
           <button class="green" onclick="saveCurrent()">Enregistrer le produit</button>
           <button class="ghost" onclick="duplicateCurrent()">Dupliquer</button>
@@ -220,9 +251,9 @@
             <div class="title">
               <div class="titleText" id="pName">AVOCAT HASS</div>
               <div class="qualityLogos">
-                <img id="pLogoIGP" class="qualityLogo" src="logo-igp.svg" alt="IGP">
-                <img id="pLogoAOP" class="qualityLogo" src="logo-aop.svg" alt="AOP">
-                <img id="pLogoLR" class="qualityLogo" src="logo-label-rouge.svg" alt="Label Rouge">
+                <img id="pLogoIGP" class="qualityLogo" src="logo-igp-officiel.jpg" alt="IGP">
+                <img id="pLogoAOP" class="qualityLogo" src="logo-aop-officiel.jpg" alt="AOP">
+                <img id="pLogoLR" class="qualityLogo" src="logo-label-rouge-officiel.png" alt="Label Rouge">
               </div>
             </div>
             <div class="photo"><img id="pPhoto" alt="" hidden><div id="pPlaceholder" class="placeholder">PHOTO DU PRODUIT</div></div>
@@ -289,6 +320,23 @@ let userImageLibrary = [];
 let hiddenBuiltinImages = JSON.parse(localStorage.getItem("hiddenBuiltinImages")||"[]");
 let selectedLibraryImage = "";
 let selectedLibraryName = "";
+
+const DEFAULT_FOLDERS=["Fruits","Agrumes","Fruits rouges","Fruits exotiques","Légumes","Salades","Pommes de terre","Champignons","Herbes aromatiques","Promotions / divers"];
+let customFolders=JSON.parse(localStorage.getItem("customImageFolders")||"[]");
+let currentFolder="Toutes les images";
+function allFolders(){
+  return [...new Set([...DEFAULT_FOLDERS,...customFolders])].sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
+}
+function saveFolders(){localStorage.setItem("customImageFolders",JSON.stringify(customFolders))}
+function builtinFamily(name){
+  const n=name.toLowerCase();
+  if(["orange","citron"].some(x=>n.includes(x)))return "Agrumes";
+  if(["fraise","cerise"].some(x=>n.includes(x)))return "Fruits rouges";
+  if(["banane","kiwi","avocat"].some(x=>n.includes(x)))return "Fruits exotiques";
+  if(["pomme","poire"].some(x=>n.includes(x)) && !n.includes("terre"))return "Fruits";
+  if(n.includes("pomme de terre"))return "Pommes de terre";
+  return "Légumes";
+}
 function applyImageToPoster(src,name=""){
   photoData="";
   $("photoUrl").value=src||"";
@@ -298,105 +346,125 @@ function applyImageToPoster(src,name=""){
 }
 function openImageDb(){return new Promise((resolve,reject)=>{const req=indexedDB.open("affichesMarcheImages",1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains("images"))db.createObjectStore("images",{keyPath:"id",autoIncrement:true});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 async function loadUserImages(){try{const db=await openImageDb();userImageLibrary=await new Promise((resolve,reject)=>{const tx=db.transaction("images","readonly");const req=tx.objectStore("images").getAll();req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error);});db.close();}catch(e){console.error(e);userImageLibrary=[];}}
-async function addUserImage(name,dataUrl,originalBytes=0,finalBytes=0){const db=await openImageDb();await new Promise((resolve,reject)=>{const tx=db.transaction("images","readwrite");tx.objectStore("images").add({name,dataUrl,originalBytes,finalBytes,createdAt:Date.now()});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();await loadUserImages();renderLibrary();}
+async function addUserImage(name,dataUrl,originalBytes=0,finalBytes=0,family="Non classées"){const db=await openImageDb();await new Promise((resolve,reject)=>{const tx=db.transaction("images","readwrite");tx.objectStore("images").add({name,dataUrl,originalBytes,finalBytes,family,createdAt:Date.now()});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();await loadUserImages();renderLibrary();}
 async function renameUserImage(id,currentName){const next=prompt("Nouveau nom de la photo :",currentName||"");if(next===null||!next.trim())return;const db=await openImageDb();const tx=db.transaction("images","readwrite"),store=tx.objectStore("images");const item=await new Promise((resolve,reject)=>{const r=store.get(id);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});if(item){item.name=next.trim();store.put(item)}await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close();await loadUserImages();renderLibrary();}
 async function deleteUserImage(id,name){if(!confirm(`Supprimer "${name}" de la bibliothèque ?`))return;const db=await openImageDb();await new Promise((resolve,reject)=>{const tx=db.transaction("images","readwrite");tx.objectStore("images").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();await loadUserImages();renderLibrary();}
 function hideBuiltinImage(name){if(!confirm(`Retirer "${name}" de la bibliothèque ?`))return;if(!hiddenBuiltinImages.includes(name))hiddenBuiltinImages.push(name);localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));renderLibrary();}
 function renameBuiltinImage(name,src){const next=prompt("Nouveau nom de cette photo :",name);if(next===null||!next.trim())return;addUserImage(next.trim(),src).then(()=>{if(!hiddenBuiltinImages.includes(name))hiddenBuiltinImages.push(name);localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));renderLibrary();});}
+
+async function moveUserImage(id,family){
+  const db=await openImageDb();
+  const tx=db.transaction("images","readwrite");
+  const store=tx.objectStore("images");
+  const item=await new Promise((resolve,reject)=>{
+    const r=store.get(id);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);
+  });
+  if(item){item.family=family;store.put(item)}
+  await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
+  db.close();
+  await loadUserImages();
+  renderLibrary();
+  renderLibraryModal();
+}
+
 function humanBytes(n){if(!n)return "—";if(n<1024)return n+" o";if(n<1024*1024)return (n/1024).toFixed(0)+" Ko";return (n/1024/1024).toFixed(1)+" Mo";}
 
-function renderLibrary(){
-  const grid=$("libraryGrid");
-  if(!grid) return;
 
+function getLibraryItems(){
   const builtins=builtinImageLibrary
     .filter(([name])=>!hiddenBuiltinImages.includes(name))
-    .map(([name,src])=>({kind:"builtin",name,src}));
-
+    .map(([name,src])=>({kind:"builtin",name,src,family:builtinFamily(name)}));
   const customs=userImageLibrary
-    .map(x=>({kind:"user",name:x.name,src:x.dataUrl,id:x.id,originalBytes:x.originalBytes,finalBytes:x.finalBytes}));
-
-  const all=[...customs,...builtins];
+    .map(x=>({kind:"user",name:x.name,src:x.dataUrl,id:x.id,originalBytes:x.originalBytes,finalBytes:x.finalBytes,family:x.family||"Non classées"}));
+  return [...customs,...builtins].sort((a,b)=>a.name.localeCompare(b.name,"fr",{sensitivity:"base"}));
+}
+function fillFamilySelects(){
+  const folders=["Toutes les images","Non classées",...allFolders()];
+  const uniq=[...new Set(folders)];
+  $("familyQuickSelect").innerHTML=uniq.map(f=>`<option>${f}</option>`).join("");
+  $("moveFamilySelect").innerHTML=['<option value="">Déplacer vers…</option>',...["Non classées",...allFolders()].map(f=>`<option>${f}</option>`)].join("");
+  if(uniq.includes(currentFolder)) $("familyQuickSelect").value=currentFolder;
+}
+function renderQuickFamily(){
+  const grid=$("quickFamilyGrid");
+  if(!grid)return;
+  let items=getLibraryItems();
+  const family=$("familyQuickSelect").value||"Toutes les images";
+  if(family!=="Toutes les images")items=items.filter(x=>x.family===family);
   grid.innerHTML="";
-
-  for(const item of all){
-    const card=document.createElement("div");
-    card.className="library-item";
-    card.dataset.kind=item.kind;
-    if(item.id!=null) card.dataset.id=String(item.id);
-
-    if(item.kind==="user"){
-      const badge=document.createElement("span");
-      badge.className="library-badge";
-      badge.textContent="PERSO";
-      card.appendChild(badge);
-    }
-
-    const img=document.createElement("img");
-    img.alt=item.name;
-    // Important : on affecte la source directement à l'élément,
-    // sans injecter la grosse image base64 dans innerHTML.
-    img.src=item.src;
-    img.loading="lazy";
-    card.appendChild(img);
-
-    const title=document.createElement("span");
-    title.textContent=item.name;
-    card.appendChild(title);
-
-    if(item.kind==="user" && item.finalBytes){
-      const size=document.createElement("div");
-      size.style.fontSize="9px";
-      size.style.color="#777";
-      size.textContent=humanBytes(item.finalBytes);
-      card.appendChild(size);
-    }
-
-    const actions=document.createElement("div");
-    actions.className="library-actions";
-
-    const rename=document.createElement("button");
-    rename.type="button";
-    rename.className="rename";
-    rename.textContent="Renommer";
-
-    const del=document.createElement("button");
-    del.type="button";
-    del.className="delete";
-    del.textContent="Supprimer";
-
-    actions.append(rename,del);
-    card.appendChild(actions);
-
-    img.addEventListener("click",()=>{
-      selectedLibraryImage=item.src;
-      selectedLibraryName=item.name;
-      grid.querySelectorAll(".library-item").forEach(x=>x.classList.remove("selected"));
-      card.classList.add("selected");
-      $("applyLibraryImage").style.display="block";
-      $("imageChoiceStatus").textContent=`${item.name} sélectionné — l’image est intégrée à l’affiche.`;
+  items.slice(0,16).forEach(item=>{
+    const btn=document.createElement("button");
+    btn.type="button";btn.className="library-item";
+    btn.innerHTML=`<img src="${item.src}" alt="${item.name}"><span>${item.name}</span>`;
+    btn.addEventListener("click",()=>{
+      selectedLibraryImage=item.src;selectedLibraryName=item.name;
       applyImageToPoster(item.src,item.name);
+      $("imageChoiceStatus").textContent=`${item.name} intégré depuis ${item.family}.`;
     });
-
-    title.addEventListener("click",()=>img.click());
-
-    rename.addEventListener("click",e=>{
-      e.stopPropagation();
-      if(item.kind==="user") renameUserImage(Number(item.id),item.name);
-      else renameBuiltinImage(item.name,item.src);
-    });
-
-    del.addEventListener("click",e=>{
-      e.stopPropagation();
-      if(item.kind==="user") deleteUserImage(Number(item.id),item.name);
-      else hideBuiltinImage(item.name);
-    });
-
+    grid.appendChild(btn);
+  });
+  $("libraryInfo").textContent=`${items.length} image${items.length>1?"s":""} dans ${family}.`;
+}
+function renderLibrary(){
+  fillFamilySelects();
+  renderQuickFamily();
+}
+function renderFolderList(){
+  const list=$("folderList");
+  const folders=["Toutes les images","Non classées",...allFolders()];
+  list.innerHTML="";
+  [...new Set(folders)].forEach(f=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="folder-btn"+(f===currentFolder?" active":"");
+    b.textContent=f;
+    b.addEventListener("click",()=>{currentFolder=f;renderFolderList();renderLibraryModal()});
+    list.appendChild(b);
+  });
+}
+function renderLibraryModal(){
+  if(!$("modalLibraryGrid"))return;
+  fillFamilySelects();
+  renderFolderList();
+  const q=($("librarySearch").value||"").trim().toLowerCase();
+  let items=getLibraryItems();
+  if(currentFolder!=="Toutes les images")items=items.filter(x=>x.family===currentFolder);
+  if(q)items=items.filter(x=>x.name.toLowerCase().includes(q));
+  items.sort((a,b)=>a.name.localeCompare(b.name,"fr",{sensitivity:"base"}));
+  $("libraryTitle").textContent=currentFolder;
+  $("libraryCount").textContent=`${items.length} image${items.length>1?"s":""} — ordre alphabétique`;
+  const grid=$("modalLibraryGrid");
+  grid.innerHTML="";
+  items.forEach(item=>{
+    const card=document.createElement("div");card.className="modal-item";
+    const img=document.createElement("img");img.src=item.src;img.alt=item.name;img.loading="lazy";
+    const name=document.createElement("div");name.className="name";name.textContent=item.name;
+    const fam=document.createElement("div");fam.className="family-chip";fam.textContent=item.family;
+    const actions=document.createElement("div");actions.className="small-actions";
+    const use=document.createElement("button");use.type="button";use.textContent="Utiliser";
+    const rename=document.createElement("button");rename.type="button";rename.textContent="Renommer";
+    const move=document.createElement("button");move.type="button";move.textContent="Déplacer";
+    const del=document.createElement("button");del.type="button";del.textContent="Supprimer";
+    actions.append(use,rename,move,del);
+    card.append(img,name,fam,actions);
+    use.onclick=()=>{selectedLibraryImage=item.src;selectedLibraryName=item.name;applyImageToPoster(item.src,item.name);$("libraryModal").classList.remove("open")};
+    rename.onclick=()=>item.kind==="user"?renameUserImage(Number(item.id),item.name):renameBuiltinImage(item.name,item.src);
+    move.onclick=async()=>{
+      const opts=["Non classées",...allFolders()];
+      const next=prompt("Déplacer vers quelle famille ?\n\n"+opts.join("\n"),item.family);
+      if(next===null)return;
+      const clean=next.trim();if(!clean)return;
+      if(!opts.includes(clean)&&clean!=="Non classées"){customFolders.push(clean);customFolders=[...new Set(customFolders)];saveFolders()}
+      if(item.kind==="user")await moveUserImage(Number(item.id),clean);
+      else{
+        await addUserImage(item.name,item.src,0,0,clean);
+        if(!hiddenBuiltinImages.includes(item.name))hiddenBuiltinImages.push(item.name);
+        localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));
+        await loadUserImages();renderLibrary();renderLibraryModal();
+      }
+    };
+    del.onclick=()=>item.kind==="user"?deleteUserImage(Number(item.id),item.name):hideBuiltinImage(item.name);
     grid.appendChild(card);
-  }
-
-  $("libraryInfo").textContent=
-    `${all.length} photo${all.length>1?"s":""} dans la bibliothèque, dont ${customs.length} personnelle${customs.length>1?"s":""}.`;
+  });
 }
 async function compressImageFile(file){const bitmap=await createImageBitmap(file);const maxSide=1200,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);if(bitmap.close)bitmap.close();let blob=await new Promise(r=>canvas.toBlob(r,"image/webp",0.78));if(!blob)blob=await new Promise(r=>canvas.toBlob(r,"image/jpeg",0.80));const dataUrl=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=()=>reject(fr.error);fr.readAsDataURL(blob);});return {dataUrl,originalBytes:file.size||0,finalBytes:blob.size};}
 function promoComputation(o){
@@ -538,7 +606,11 @@ $("photoFile").addEventListener("change",async e=>{
     if(name===null) name=baseName;
     name=(name||baseName).trim()||baseName;
 
-    await addUserImage(name,result.dataUrl,result.originalBytes,result.finalBytes);
+    let folder=prompt("Dans quelle famille classer cette photo ?", currentFolder==="Toutes les images"?"Non classées":currentFolder);
+    if(folder===null)folder="Non classées";
+    folder=(folder||"Non classées").trim()||"Non classées";
+    if(folder!=="Non classées"&&!allFolders().includes(folder)){customFolders.push(folder);customFolders=[...new Set(customFolders)];saveFolders()}
+    await addUserImage(name,result.dataUrl,result.originalBytes,result.finalBytes,folder);
 
     // Recharge explicitement la base puis redessine la bibliothèque.
     await loadUserImages();
@@ -587,6 +659,40 @@ function exportData(){
 function clearAll(){if(confirm("Effacer tous les produits enregistrés ?")){products=[];persist();renderList();newProduct()}}
 function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
+
+$("openLibraryBtn").addEventListener("click",()=>{$("libraryModal").classList.add("open");$("libraryModal").setAttribute("aria-hidden","false");renderLibraryModal()});
+$("closeLibraryBtn").addEventListener("click",()=>{$("libraryModal").classList.remove("open");$("libraryModal").setAttribute("aria-hidden","true")});
+$("libraryModal").addEventListener("click",e=>{if(e.target===$("libraryModal"))$("closeLibraryBtn").click()});
+$("familyQuickSelect").addEventListener("change",()=>{currentFolder=$("familyQuickSelect").value;renderQuickFamily()});
+$("librarySearch").addEventListener("input",renderLibraryModal);
+$("newFolderBtn").addEventListener("click",()=>{
+  const n=prompt("Nom de la nouvelle famille :");if(n===null)return;const clean=n.trim();if(!clean)return;
+  if(!customFolders.includes(clean)&&!DEFAULT_FOLDERS.includes(clean))customFolders.push(clean);
+  customFolders=[...new Set(customFolders)];saveFolders();currentFolder=clean;renderLibrary();renderLibraryModal();
+});
+$("renameFolderBtn").addEventListener("click",async()=>{
+  if(["Toutes les images","Non classées"].includes(currentFolder)){alert("Cette famille ne peut pas être renommée.");return}
+  const next=prompt("Nouveau nom de la famille :",currentFolder);if(next===null)return;const clean=next.trim();if(!clean)return;
+  const old=currentFolder;
+  const db=await openImageDb();
+  const tx=db.transaction("images","readwrite");const store=tx.objectStore("images");
+  const all=await new Promise((res,rej)=>{const r=store.getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)});
+  all.filter(x=>(x.family||"Non classées")===old).forEach(x=>{x.family=clean;store.put(x)});
+  await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});db.close();
+  customFolders=customFolders.filter(x=>x!==old);if(!DEFAULT_FOLDERS.includes(clean))customFolders.push(clean);saveFolders();
+  currentFolder=clean;await loadUserImages();renderLibrary();renderLibraryModal();
+});
+$("deleteFolderBtn").addEventListener("click",async()=>{
+  if(["Toutes les images","Non classées"].includes(currentFolder)){alert("Cette famille ne peut pas être supprimée.");return}
+  if(!confirm(`Supprimer la famille "${currentFolder}" ? Les photos seront déplacées vers Non classées.`))return;
+  const old=currentFolder;
+  const db=await openImageDb();const tx=db.transaction("images","readwrite");const store=tx.objectStore("images");
+  const all=await new Promise((res,rej)=>{const r=store.getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)});
+  all.filter(x=>(x.family||"Non classées")===old).forEach(x=>{x.family="Non classées";store.put(x)});
+  await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});db.close();
+  customFolders=customFolders.filter(x=>x!==old);saveFolders();currentFolder="Non classées";await loadUserImages();renderLibrary();renderLibraryModal();
+});
+
 loadUserImages().then(()=>renderLibrary());
 if(products.length){selected=0;writeForm(products[0])}else{
   writeForm({name:"TOMATE",saleMode:"kg",mainPrice:"2.99",promoType:"none",origin:"FRANCE",category:"1",caliber:"",treatment:"",photoUrl:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Tomato_(1).jpg?width=960"});
@@ -595,5 +701,36 @@ renderList();
 
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 </script>
+
+<div id="libraryModal" class="library-modal" aria-hidden="true">
+  <div class="library-window">
+    <aside class="library-sidebar">
+      <div class="library-head">
+        <b>Familles</b>
+        <button type="button" id="closeLibraryBtn">✕</button>
+      </div>
+      <button type="button" id="newFolderBtn">+ Nouvelle famille</button>
+      <div id="folderList" class="folder-list"></div>
+      <div class="folder-actions">
+        <button type="button" id="renameFolderBtn">Renommer</button>
+        <button type="button" id="deleteFolderBtn">Supprimer</button>
+      </div>
+    </aside>
+    <section class="library-content">
+      <div class="library-head">
+        <div>
+          <h2 id="libraryTitle" style="margin:0">Toutes les images</h2>
+          <div id="libraryCount" class="hint"></div>
+        </div>
+      </div>
+      <div class="library-toolbar">
+        <input id="librarySearch" placeholder="Rechercher une image">
+        <select id="moveFamilySelect"></select>
+      </div>
+      <div id="modalLibraryGrid" class="modal-grid"></div>
+    </section>
+  </div>
+</div>
+
 </body>
 </html>
