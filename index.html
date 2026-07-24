@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
   <meta name="theme-color" content="#111111">
   <meta name="description" content="Générateur d'affiches fruits et légumes pour Android">
   <link rel="manifest" href="manifest.webmanifest">
@@ -138,10 +138,61 @@
       .library-sidebar{border-right:0;border-bottom:1px solid #ddd;max-height:230px}
     }
 
+
+/* Optimisation Xiaomi 14T / Android */
+html,body{max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font-size:16px}
+button,.filebtn{min-height:44px;touch-action:manipulation}
+input,select,textarea{min-height:44px}
+
+@media (max-width:760px){
+  body{margin:0;background:#f4f4f4}
+  header,.topbar,.app-header{position:sticky;top:0;z-index:50;padding:8px 10px!important}
+  .toolbar,.actions,.top-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;width:100%}
+  .toolbar button,.actions button,.top-actions button{padding:8px 6px!important;font-size:12px!important;min-width:0!important;white-space:normal}
+  main,.container,.layout,.app-grid{width:100%!important;max-width:100%!important;margin:0!important;padding:8px!important;display:block!important}
+  .panel,.card,.section,.editor,.preview-card{width:100%!important;max-width:100%!important;margin:0 0 10px 0!important;border-radius:12px!important}
+  .form-grid,.settings-grid,.grid{grid-template-columns:1fr!important;gap:8px!important}
+  label{font-size:13px!important}
+  input,select,textarea{width:100%!important;max-width:100%!important;padding:11px 12px!important}
+  input[type="checkbox"]{width:22px!important;height:22px!important;min-height:22px!important}
+  .check-row,.inline-checks{gap:12px!important;flex-wrap:wrap!important}
+
+  .library-launch{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  #familyQuickSelect{width:100%!important}
+  #quickFamilyGrid,.library-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .library-item{padding:6px!important;min-width:0!important}
+  .library-item img{width:100%!important;aspect-ratio:1/1!important;object-fit:contain!important}
+  .library-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:4px!important}
+  .library-actions button{font-size:11px!important;padding:6px 4px!important}
+
+  .library-modal{padding:0!important;align-items:stretch!important}
+  .library-window{width:100vw!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important;display:flex!important;flex-direction:column!important}
+  .library-sidebar{width:100%!important;border-right:0!important;border-bottom:1px solid #ddd!important;padding:10px!important}
+  .folder-list{display:flex!important;flex-direction:row!important;overflow-x:auto!important;gap:6px!important;padding-bottom:4px!important}
+  .folder-btn{width:auto!important;min-width:max-content!important;white-space:nowrap!important}
+  .library-content{flex:1!important;min-height:0!important;overflow:auto!important;padding:10px!important}
+  .library-toolbar{display:grid!important;grid-template-columns:1fr!important}
+  .modal-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+
+  .poster-wrap,.preview,.preview-wrap{width:100%!important;max-width:100%!important;overflow:hidden!important;display:block!important}
+  .poster{width:100%!important;max-width:100%!important;height:auto!important;aspect-ratio:210/297!important;transform:none!important;border-radius:10px!important}
+
+  table{font-size:12px!important}
+  th,td{padding:7px 5px!important}
+  .table-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+  #buildVersion{right:8px!important;bottom:max(8px,env(safe-area-inset-bottom))!important;font-size:9px!important;pointer-events:none!important}
+}
+
+@media (orientation:landscape) and (min-width:780px) and (max-width:1100px){
+  .layout,.app-grid{display:grid!important;grid-template-columns:minmax(320px,40%) 1fr!important;gap:10px!important;align-items:start!important}
+  .poster{width:100%!important;height:auto!important}
+}
+
 </style>
 <!-- BUILD: V2-FINALE-UNIFIEE-2026-07-24 -->
 </head>
-<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.1 Bibliothèque dossiers</div>
+<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.2 Xiaomi 14T</div>
 <header>
   <h1>Affiches Marché</h1>
   <div class="toolbar">

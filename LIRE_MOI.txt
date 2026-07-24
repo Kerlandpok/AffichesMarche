@@ -1,16 +1,14 @@
-CORRECTIF BIBLIOTHÈQUE — V2.1
+AFFICHES MARCHÉ — V2.2 XIAOMI 14T
 
-Sur GitHub, remplace uniquement :
-1. index.html
-2. sw.js
+Optimisations :
+- boutons tactiles plus grands ;
+- formulaire adapté à l'écran du téléphone ;
+- bibliothèque en 2 colonnes ;
+- bibliothèque plein écran ;
+- dossiers de familles défilables horizontalement ;
+- aperçu de l'affiche ajusté à la largeur ;
+- portrait et paysage améliorés ;
+- pas de zoom automatique dans les champs.
 
-Après publication GitHub Pages, la page doit afficher en bas à droite :
-V2.1 Bibliothèque dossiers
-
-Dans la zone photo, l'ancienne grille complète doit être remplacée par :
-- bouton « 📁 Ouvrir la bibliothèque »
-- choix de famille
-- photos filtrées par famille
-
-La bibliothèque permet de créer/renommer/supprimer les familles et de déplacer les photos.
-Les images sont triées alphabétiquement dans chaque famille.
+Pour GitHub, remplacer seulement index.html et sw.js.
+Après publication, « V2.2 Xiaomi 14T » doit apparaître en bas à droite.
