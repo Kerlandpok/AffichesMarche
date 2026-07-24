@@ -1,14 +1,18 @@
-AFFICHES MARCHÉ — V2.2 XIAOMI 14T
+AFFICHES MARCHÉ — V2.3 XIAOMI 14T
 
-Optimisations :
-- boutons tactiles plus grands ;
-- formulaire adapté à l'écran du téléphone ;
-- bibliothèque en 2 colonnes ;
-- bibliothèque plein écran ;
-- dossiers de familles défilables horizontalement ;
-- aperçu de l'affiche ajusté à la largeur ;
-- portrait et paysage améliorés ;
-- pas de zoom automatique dans les champs.
+Correctifs par rapport à la V2.2 :
+- suppression des gros champs trop hauts ;
+- suppression de la mise en page qui faisait déborder les boutons ;
+- barre d'actions plus compacte ;
+- bibliothèque adaptée sans rectangle vide géant ;
+- sélection de famille sur toute la largeur ;
+- grille photos 2 colonnes ;
+- fenêtre bibliothèque plein écran ;
+- tableaux défilables horizontalement au lieu d'élargir la page ;
+- aperçu affiche limité à la largeur du téléphone.
 
-Pour GitHub, remplacer seulement index.html et sw.js.
-Après publication, « V2.2 Xiaomi 14T » doit apparaître en bas à droite.
+Sur GitHub, remplacer uniquement :
+- index.html
+- sw.js
+
+La mention en bas à droite doit afficher « V2.3 Xiaomi 14T ».

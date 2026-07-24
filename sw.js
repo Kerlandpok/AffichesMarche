@@ -1,4 +1,4 @@
-const CACHE="affiches-marche-v2-2-xiaomi14t-20260724";
+const CACHE="affiches-marche-v2-3-xiaomi14t-20260724";
 const ASSETS=["./","index.html","sw.js","logo-igp-officiel.jpg","logo-aop-officiel.jpg","logo-label-rouge-officiel.png"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
