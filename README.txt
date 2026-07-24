@@ -1,29 +1,27 @@
-AFFICHES MARCHÉ — BIBLIOTHÈQUE PERSONNALISABLE
+AFFICHES MARCHÉ — V2 FINALE UNIFIÉE
 
-- Toute photo choisie dans la galerie est automatiquement compressée avant stockage.
-- Côté le plus long limité à 1200 px.
-- WebP qualité ~78 % (JPEG de secours).
-- La photo est ajoutée à la bibliothèque et intégrée à l'affiche.
-- Renommer et supprimer sont disponibles sous chaque photo.
-- Les photos personnelles sont stockées dans IndexedDB, mieux adapté que localStorage pour les images.
-- Le poids avant/après optimisation est indiqué après l'ajout.
-
-Les photos personnelles restent locales au navigateur/appareil. Effacer les données du site ou désinstaller l'application peut supprimer cette bibliothèque.
-
-
-CORRECTIF BIBLIOTHÈQUE PHOTO
-- les photos personnelles ne sont plus injectées en base64 dans le HTML de la grille ;
-- la bibliothèque est rechargée immédiatement après l'ajout ;
-- la nouvelle photo apparaît en tête de bibliothèque ;
-- message de confirmation après compression et enregistrement.
-
-
-NOUVEAU : BIBLIOTHÈQUE PAR FAMILLES
-- bouton dédié pour ouvrir la bibliothèque complète ;
-- création de familles/dossiers personnalisés ;
-- renommage et suppression des familles ;
-- déplacement d'une photo vers une autre famille ;
-- dossiers Toutes les images et Non classées ;
-- sélection rapide d'une famille depuis la page principale ;
+Cette version regroupe :
+- bibliothèque ouverte via un bouton dédié ;
+- familles/dossiers personnalisables ;
+- création, renommage et suppression des familles ;
+- déplacement des photos entre familles ;
 - tri alphabétique automatique dans chaque famille ;
-- recherche par nom dans la bibliothèque.
+- dossiers « Toutes les images » et « Non classées » ;
+- ajout d'une photo depuis la galerie ;
+- compression automatique des photos avant stockage ;
+- renommage et suppression des photos ;
+- vraies photos de fruits et légumes ;
+- insertion d'une photo sur l'affiche ;
+- promotions automatiques ;
+- vrais logos officiels AOP, IGP et Label Rouge intégrés localement ;
+- cache renforcé pour éviter l'ancienne version.
+
+POUR GITHUB
+Remplacez tous les fichiers à la racine par ceux de ce ZIP.
+Conservez les fichiers officiels :
+- logo-aop-officiel.jpg
+- logo-igp-officiel.jpg
+- logo-label-rouge-officiel.png
+
+Après l'envoi, attendre GitHub Pages puis ouvrir l'application dans Chrome.
+Si une ancienne version apparaît, vider les données du site ou désinstaller/réinstaller la PWA.
