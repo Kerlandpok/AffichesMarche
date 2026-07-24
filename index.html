@@ -1,285 +1,417 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b6b2b">
-<meta name="description" content="Générateur d'affiches fruits et légumes pour Android">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>Affiches Marché</title>
-<style>
-:root{--green:#08742f;--green2:#0d5e29;--red:#d71920;--ink:#111;--muted:#65706a;--line:#dce2de;--bg:#f4f7f5}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
-header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:10px}.brand b{color:var(--green);font-size:20px}.brand small{display:block;color:#333}
-.appmark{width:44px;height:44px;border-radius:50%;background:conic-gradient(from 45deg,#fff 0 12.5%,var(--green) 0 25%,#fff 0 37.5%,var(--green) 0 50%,#fff 0 62.5%,var(--green) 0 75%,#fff 0 87.5%,var(--green) 0);border:2px solid var(--green)}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap}
-button,.filebtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer}
-button.primary{background:var(--green);color:#fff;border-color:var(--green)}
-button.danger{background:#fff0f0;color:#a40000;border-color:#ffcaca}
-main{max-width:1500px;margin:auto;padding:14px}
-.layout{display:grid;grid-template-columns:300px minmax(580px,1fr);gap:14px;align-items:start}
-.sidebar{display:flex;flex-direction:column;gap:12px}
-.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 3px 14px #16351f0b}
-.card h2{font-size:18px;margin:0 0 12px}.section-title{display:flex;align-items:center;gap:8px}
-label{display:block;font-size:12px;font-weight:700;color:#48504c;margin-bottom:10px}
-input,select{width:100%;margin-top:5px;padding:11px;border:1px solid #cfd8d2;border-radius:9px;font:inherit;background:#fff}
-.inline-checks{display:flex;gap:9px}.choice{flex:1;display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:10px;margin:0;font-size:14px;color:#222}
-.choice input{width:auto;margin:0;accent-color:var(--green)}
-.logo-row{display:flex;align-items:center;gap:10px;margin:8px 0}.logo-row img{width:45px;height:45px;object-fit:contain}.logo-row input{width:auto;margin:0;accent-color:var(--green)}
-.price-input{position:relative}.price-input input{padding-right:35px}.price-input span{position:absolute;right:13px;bottom:11px;font-weight:700}
-.actions{display:grid;gap:9px}.actions button,.filebtn{text-align:center;width:100%}
-.preview-card{padding:10px}
-.poster-wrap{display:flex;justify-content:center;overflow:auto;background:#fff;border-radius:12px}
-.poster{width:720px;aspect-ratio:210/297;border:3px solid var(--green2);border-radius:20px;overflow:hidden;background:#fff;display:grid;grid-template-rows:24% 45% 31%;box-shadow:0 4px 20px #0001}
-.poster-top{position:relative;padding:18px 115px 10px 22px;display:flex;align-items:center;justify-content:center;border-bottom:2px solid var(--green2)}
-.poster-title{font-size:58px;font-weight:900;text-align:center;text-transform:uppercase;line-height:.95;color:#000;max-height:100%;overflow:hidden}
-.poster-logos{position:absolute;right:16px;top:12px;display:flex;flex-direction:column;gap:8px;align-items:center}
-.poster-logos img{width:78px;height:66px;object-fit:contain;display:none}
-.photo-zone{position:relative;overflow:hidden;background:#fafafa}.photo-zone img{width:100%;height:100%;object-fit:cover}.placeholder{height:100%;display:flex;align-items:center;justify-content:center;color:#8a928d;font-size:24px;font-weight:800}
-.info-zone{border-top:3px solid var(--green2);padding:10px 14px;display:grid;grid-template-columns:46% 54%;gap:12px}
-.left-info{display:flex;flex-direction:column;justify-content:space-around;padding:3px 8px}
-.meta{font-size:24px;font-weight:900;text-transform:uppercase;border-bottom:2px solid var(--green2);padding-bottom:7px}
-.origin-label{font-size:20px;color:var(--green2);font-weight:900;margin-top:4px}
-.origin-row{height:76px;display:flex;align-items:center;justify-content:flex-start;gap:12px;overflow:hidden}
-.origin-text{font-size:58px;font-weight:900;line-height:1;white-space:nowrap;transform-origin:left center}
-.flag{display:none;width:72px;height:48px;border:1px solid #999;flex:none;background:linear-gradient(90deg,#0055a4 0 33.33%,#fff 33.33% 66.66%,#ef4135 66.66% 100%)}
-.treatment{font-size:22px;font-weight:900;text-transform:uppercase}
-.right-info{display:grid;grid-template-rows:48% 52%;gap:9px}
-.main-price,.promo-box{border:2px solid var(--green2);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
-.main-price-value{font-size:84px;line-height:.9;font-weight:900;color:var(--green)}
-.main-price-unit{font-size:23px;font-weight:900;text-transform:uppercase}
-.promo-box{border-color:var(--red);padding:5px}
-.promo-line{display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
-.promo-label{font-size:31px;font-weight:900;color:var(--red);text-transform:uppercase;line-height:1}
-.promo-price{font-size:43px;font-weight:900;color:var(--red);line-height:1}
-.promo-detail{font-size:20px;font-weight:800;margin-top:2px}
-.promo-unit-price{font-size:18px;margin-top:4px}.promo-unit-price b{color:var(--red)}
-.help{font-size:12px;color:var(--muted);margin:7px 0 0}
-@media(max-width:1000px){.layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.actions-card{grid-column:1/-1}.poster{width:700px}}
-@media(max-width:700px){header{align-items:flex-start;flex-direction:column}.sidebar{display:block}.card{margin-bottom:10px}.poster{width:650px}.poster-wrap{justify-content:flex-start}}
-@media print{
- body{background:#fff} header,.sidebar{display:none!important} main{padding:0;max-width:none}.layout{display:block}.preview-card{border:0;box-shadow:none;padding:0}.poster-wrap{overflow:visible}.poster{width:210mm;height:297mm;aspect-ratio:auto;border-radius:0;box-shadow:none}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="Générateur d'affiches fruits et légumes pour Android">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>Affiches Marché</title>
+  <style>
+    :root{
+      --bg:#f2f3f5;--card:#fff;--ink:#111;--muted:#6a6a6a;--red:#d7190f;
+      --line:#202020;--accent:#111;--green:#198754
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+    header{position:sticky;top:0;z-index:20;background:#111;color:#fff;padding:12px 14px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 10px #0003}
+    header h1{font-size:18px;margin:0}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    button,.fileBtn{border:0;border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer}
+    button.primary{background:#fff;color:#111}
+    button.dark,.fileBtn{background:#222;color:#fff}
+    button.red{background:var(--red);color:#fff}
+    button.green{background:var(--green);color:#fff}
+    button.ghost{background:#e9eaec;color:#111}
+    main{max-width:1400px;margin:auto;padding:14px}
+    .tabs{display:flex;gap:8px;margin-bottom:14px}
+    .tab{background:#ddd;color:#111}.tab.active{background:#111;color:#fff}
+    .panel{display:none}.panel.active{display:block}
+    .grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);gap:14px}
+    .card{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 2px 12px #0001}
+    .card h2{margin:0 0 12px;font-size:17px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    label{font-size:12px;font-weight:700;color:#444;display:block}
+    input,select,textarea{width:100%;margin-top:5px;padding:11px;border:1px solid #cfd2d6;border-radius:10px;font:inherit;background:#fff}
+    textarea{min-height:76px;resize:vertical}
+    .full{grid-column:1/-1}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .table-wrap{overflow:auto;border-radius:12px;border:1px solid #ddd}
+    table{border-collapse:collapse;width:100%;min-width:880px;background:#fff}
+    th,td{padding:9px;border-bottom:1px solid #eee;text-align:left;font-size:13px}
+    th{background:#111;color:#fff;position:sticky;top:0}
+    tr.selected{outline:3px solid #ffcc00;outline-offset:-3px}
+    td .mini{padding:6px 9px;border-radius:8px}
+    .poster-shell{background:#dfe1e5;border-radius:14px;padding:12px;display:flex;justify-content:center;overflow:auto}
+    .poster{
+      width:760px; aspect-ratio: 210 / 297; background:white; border:4px solid #111;
+      display:grid;grid-template-columns:1fr 1fr;grid-template-rows:13% 34% 24% 22% 7%;
+      overflow:hidden;transform-origin:top center;box-shadow:0 3px 20px #0002;
+    }
+    .title{grid-column:1/3;border-bottom:3px solid #111;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;font-size:44px;font-weight:900;text-transform:uppercase;text-align:center;padding:8px 14px}
+    .titleText{min-width:0;overflow:hidden;white-space:nowrap;text-align:center}
+    .qualityLogos{display:flex;gap:8px;align-items:center}.qualityLogo{width:58px;height:58px;object-fit:contain;display:none}
+    .photo{grid-column:1/2;grid-row:2/4;border-right:3px solid #111;display:flex;align-items:center;justify-content:center;
+      overflow:hidden;background:#fafafa;position:relative}
+    .photo img{width:100%;height:100%;object-fit:cover}
+    .photo .placeholder{color:#888;font-weight:700;text-align:center;padding:20px}
+    .mainprice{grid-column:2/3;grid-row:2/3;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .unitTop{font-size:26px;font-weight:900;color:var(--red);margin-bottom:2px}
+    .price{font-size:105px;line-height:.9;font-weight:900;color:var(--red)}
+    .promo{grid-column:2/3;grid-row:3/4;border-top:3px solid #111;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .promoLabel{font-size:30px;font-weight:900;color:var(--red);max-width:95%;text-align:center;line-height:1.05;overflow:hidden}
+    .promoPrice{font-size:82px;line-height:.95;font-weight:900;color:var(--red)}
+    .promoUnit{font-size:17px;font-weight:700;margin-top:4px}
+    .origin{grid-column:1/3;grid-row:4/5;border-top:3px solid #111;display:grid;grid-template-rows:auto 1fr}
+    .originLabel{font-size:25px;font-weight:900;padding:8px 12px;border-bottom:2px solid #111}
+    .originValue{display:flex;align-items:center;justify-content:center;gap:14px;font-size:92px;line-height:1;font-weight:900;text-transform:uppercase;padding:5px 12px;text-align:center;white-space:nowrap;overflow:hidden}
+    .originText{display:inline-block;transform-origin:center center}.frFlag{width:76px;height:50px;border:2px solid #111;display:none;flex:none;background:linear-gradient(90deg,#0055a4 0 33.33%,#fff 33.33% 66.66%,#ef4135 66.66% 100%)}
+    .check-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:7px}.check-row label{display:flex;align-items:center;gap:7px;font-size:14px;color:#111}.check-row input{width:auto;margin:0;transform:scale(1.2)}
+    .legal{grid-column:1/3;grid-row:5/6;border-top:3px solid #111;display:grid;grid-template-columns:1fr 1fr 2fr}
+    .legal>div{display:flex;align-items:center;justify-content:center;text-align:center;font-size:15px;font-weight:800;padding:6px;border-right:2px solid #111}
+    .legal>div:last-child{border-right:0}
+    .hint{font-size:12px;color:var(--muted);margin-top:8px}
+    .settings-row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+    .settings-row>label{min-width:150px;flex:1}
+    .promo-mechanics{border:1px solid #ddd;border-radius:12px;padding:10px;background:#fafafa}
+    .library-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
+    .library-item{border:2px solid transparent;border-radius:10px;background:#fff;padding:6px;cursor:pointer;text-align:center;font-size:11px;font-weight:700}
+    .library-item:hover,.library-item.selected{border-color:#111}
+    .library-item img{width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:8px;background:#f8f8f8}
+    .calc-box{grid-column:1/-1;background:#fff7df;border:1px solid #f0d78e;border-radius:10px;padding:10px;font-size:13px;font-weight:700}
+    @media(max-width:950px){
+      .grid{grid-template-columns:1fr}
+      .poster{width:680px}
+    }
+    @media(max-width:700px){
+      header{align-items:flex-start;flex-direction:column}
+      .form-grid{grid-template-columns:1fr}
+      .poster{width:620px}
+      .poster-shell{justify-content:flex-start}
+    }
+    @media print{
+      body{background:#fff}
+      header,.tabs,#dataPanel,.no-print{display:none!important}
+      main{padding:0;margin:0;max-width:none}
+      #previewPanel{display:block!important}
+      .grid{display:block}
+      .card{box-shadow:none;padding:0;border-radius:0}
+      .card:first-child{display:none}
+      .poster-shell{padding:0;background:#fff;border-radius:0;overflow:visible}
+      .poster{width:210mm;height:297mm;aspect-ratio:auto;box-shadow:none;page-break-after:always}
+    }
+  </style>
 </head>
 <body>
 <header>
-  <div class="brand"><div class="appmark"></div><div><b>AFFICHES MARCHÉ</b><small>Générateur d'affiches</small></div></div>
+  <h1>Affiches Marché</h1>
   <div class="toolbar">
-    <button onclick="window.print()">Imprimer / PDF</button>
-    <button onclick="saveProduct()">Enregistrer</button>
-    <button onclick="resetForm()">Réinitialiser</button>
+    <button class="primary" onclick="newProduct()">Nouveau</button>
+    <button class="green" onclick="saveCurrent()">Enregistrer</button>
+    <button class="red" onclick="window.print()">Imprimer / PDF</button>
   </div>
 </header>
 
 <main>
-<div class="layout">
-  <aside class="sidebar">
-    <section class="card">
-      <h2>Informations produit</h2>
-      <label>Désignation du produit<input id="name" value="Tomates anciennes"></label>
-      <label>Catégorie<input id="category" value="Catégorie I"></label>
-      <label>Calibre<input id="caliber" placeholder="Ex. 67/82"></label>
-      <label>Origine<input id="origin" value="France"></label>
-      <label>Traitement<input id="treatment" value="Sans traitement"></label>
-      <div><b style="font-size:12px">Logos de qualité</b>
-        <label class="logo-row"><input id="igp" type="checkbox"><img src="logo-igp-officiel.jpg"> IGP</label>
-        <label class="logo-row"><input id="aop" type="checkbox"><img src="logo-aop-officiel.jpg"> AOP</label>
-        <label class="logo-row"><input id="lr" type="checkbox"><img src="logo-label-rouge-officiel.png"> Label Rouge</label>
-      </div>
-    </section>
+  <div class="tabs no-print">
+    <button class="tab active" data-tab="dataPanel">Produits</button>
+    <button class="tab" data-tab="previewPanel">Affiche</button>
+    <button class="tab" data-tab="settingsPanel">Sauvegarde</button>
+  </div>
 
-    <section class="card">
-      <h2>Mode de vente</h2>
-      <div class="inline-checks">
-        <label class="choice"><input id="modeKg" type="checkbox" checked> Au kg</label>
-        <label class="choice"><input id="modePiece" type="checkbox"> À la pièce</label>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Prix et promotion</h2>
-      <label>Prix de vente
-        <div class="price-input"><input id="price" type="number" step="0.01" value="3"><span>€</span></div>
-      </label>
-      <label>Quantité du lot<input id="lotQty" type="number" step="0.01" min="0" value="2"></label>
-      <label>Prix du lot
-        <div class="price-input"><input id="lotPrice" type="number" step="0.01" value="3"><span>€</span></div>
-      </label>
-      <label>Mention promotionnelle<input id="promo" value="PROMO LOT"></label>
-      <p class="help">Le prix de revient au kg ou à la pièce est calculé automatiquement.</p>
-    </section>
-
-    <section class="card actions-card">
-      <div class="actions">
-        <button class="primary" onclick="window.print()">Générer / imprimer l'affiche</button>
-        <label class="filebtn">Choisir une photo<input id="photo" type="file" accept="image/*" capture="environment" hidden></label>
-        <button onclick="exportData()">Exporter les données</button>
-        <label class="filebtn">Importer les données<input id="importData" type="file" accept=".json" hidden></label>
-        <button class="danger" onclick="resetForm()">Réinitialiser</button>
-      </div>
-    </section>
-  </aside>
-
-  <section class="card preview-card">
-    <div class="poster-wrap">
-      <div class="poster" id="poster">
-        <div class="poster-top">
-          <div class="poster-title" id="pName">TOMATES ANCIENNES</div>
-          <div class="poster-logos">
-            <img id="pIgp" src="logo-igp-officiel.jpg">
-            <img id="pAop" src="logo-aop-officiel.jpg">
-            <img id="pLr" src="logo-label-rouge-officiel.png">
+  <section id="dataPanel" class="panel active">
+    <div class="grid">
+      <div class="card">
+        <h2>Informations du produit</h2>
+        <div class="form-grid">
+          <label>Désignation<input id="name" placeholder="AVOCAT HASS"></label>
+          <label>Sous-titre / variété<input id="subtitle" placeholder="Variété Hass"></label>
+          <label class="full">Mode de vente
+            <div class="check-row">
+              <label><input id="saleKg" type="checkbox"> Au kg</label>
+              <label><input id="salePiece" type="checkbox" checked> À la pièce</label>
+            </div>
+          </label>
+          <label>Prix principal (€)<input id="mainPrice" type="number" step="0.01" placeholder="1.00"></label>
+          <label class="full">Mécanique promotionnelle
+            <select id="promoType">
+              <option value="none">Aucune promotion</option>
+              <option value="custom">Lot à prix spécial</option>
+              <option value="free">X achetés + Y offert(s)</option>
+              <option value="bundle">Prix spécial pour plusieurs</option>
+            </select>
+          </label>
+          <div class="full promo-mechanics" id="promoFields">
+            <div class="form-grid">
+              <label id="buyQtyWrap">Quantité achetée<input id="buyQty" type="number" step="1" min="1" value="2"></label>
+              <label id="freeQtyWrap">Quantité offerte<input id="freeQty" type="number" step="1" min="1" value="1"></label>
+              <label id="bundleQtyWrap">Quantité dans le lot<input id="promoQty" type="number" step="1" min="1" value="2"></label>
+              <label id="bundlePriceWrap">Prix du lot (€)<input id="promoPrice" type="number" step="0.01" placeholder="1.50"></label>
+              <label class="full">Mention promotionnelle<input id="promoLabel" placeholder="Ex. LES 2 / 2+1 OFFERT"></label>
+            </div>
+          </div>
+          <div class="calc-box" id="promoCalc">Aucune promotion sélectionnée.</div>
+          <label>Origine<input id="origin" placeholder="PÉROU"></label>
+          <label>Catégorie<input id="category" placeholder="1"></label>
+          <label>Calibre<input id="caliber" placeholder="18/22"></label>
+          <label>Traitement<input id="treatment" placeholder="Non traité après récolte"></label>
+          <label class="full">Labels qualité
+            <div class="check-row">
+              <label><input id="logoIGP" type="checkbox"> IGP</label>
+              <label><input id="logoAOP" type="checkbox"> AOP</label>
+              <label><input id="logoLR" type="checkbox"> Label Rouge</label>
+            </div>
+          </label>
+          <label class="full">Photo du produit
+            <input id="photoFile" type="file" accept="image/*" capture="environment">
+          </label>
+          <label class="full">Ou URL de la photo<input id="photoUrl" placeholder="https://..."></label>
+          <div class="full">
+            <label>Bibliothèque d’images intégrée</label>
+            <div id="libraryGrid" class="library-grid"></div>
           </div>
         </div>
-        <div class="photo-zone">
-          <img id="pPhoto" hidden>
-          <div id="placeholder" class="placeholder">PHOTO DU PRODUIT</div>
+        <div class="actions">
+          <button class="green" onclick="saveCurrent()">Enregistrer le produit</button>
+          <button class="ghost" onclick="duplicateCurrent()">Dupliquer</button>
+          <button class="red" onclick="deleteCurrent()">Supprimer</button>
         </div>
-        <div class="info-zone">
-          <div class="left-info">
-            <div class="meta" id="pCategory">CATÉGORIE I</div>
-            <div>
-              <div class="origin-label">ORIGINE</div>
-              <div class="origin-row"><span class="origin-text" id="pOrigin">FRANCE</span><span id="flag" class="flag"></span></div>
+      </div>
+
+      <div class="card">
+        <h2>Liste des produits</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Produit</th><th>Origine</th><th>Prix</th><th>Action</th></tr></thead>
+            <tbody id="productsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="previewPanel" class="panel">
+    <div class="grid">
+      <div class="card no-print">
+        <h2>Aperçu</h2>
+        <p>Le modèle reprend le design validé : photo à gauche, prix rouge, promotion et origine géante.</p>
+        <div class="actions">
+          <button class="red" onclick="window.print()">Imprimer / enregistrer en PDF</button>
+          <button class="dark" onclick="showTab('dataPanel')">Modifier les données</button>
+        </div>
+        <p class="hint">Sur Android : choisissez « Enregistrer au format PDF » dans la fenêtre d’impression.</p>
+      </div>
+      <div class="card">
+        <div class="poster-shell">
+          <div class="poster" id="poster">
+            <div class="title">
+              <div class="titleText" id="pName">AVOCAT HASS</div>
+              <div class="qualityLogos">
+                <img id="pLogoIGP" class="qualityLogo" src="logo-igp.svg" alt="IGP">
+                <img id="pLogoAOP" class="qualityLogo" src="logo-aop.svg" alt="AOP">
+                <img id="pLogoLR" class="qualityLogo" src="logo-label-rouge.svg" alt="Label Rouge">
+              </div>
             </div>
-            <div class="treatment" id="pTreatment">SANS TRAITEMENT</div>
-          </div>
-          <div class="right-info">
-            <div class="main-price">
-              <div class="main-price-value" id="pPrice">3€00</div>
-              <div class="main-price-unit" id="pMode">LE KG</div>
+            <div class="photo"><img id="pPhoto" alt="" hidden><div id="pPlaceholder" class="placeholder">PHOTO DU PRODUIT</div></div>
+            <div class="mainprice">
+              <div class="unitTop" id="pUnit">€ / PIÈCE</div>
+              <div class="price" id="pMainPrice">1,20</div>
             </div>
-            <div class="promo-box" id="promoBox">
-              <div class="promo-line"><span class="promo-label" id="pPromo">PROMO LOT</span><span class="promo-price" id="pLotPrice">3€00</span></div>
-              <div class="promo-detail" id="pLotDetail">2 KG POUR 3€00</div>
-              <div class="promo-unit-price" id="pUnitPrice">Soit <b>1€50</b> le kg</div>
+            <div class="promo">
+              <div class="promoLabel" id="pPromoLabel">LES 3</div>
+              <div class="promoPrice" id="pPromoPrice">2,95 €</div>
+              <div class="promoUnit" id="pUnitPrice">Soit 0,98 € / pièce</div>
+            </div>
+            <div class="origin">
+              <div class="originLabel">ORIGINE</div>
+              <div class="originValue"><span id="frFlag" class="frFlag"></span><span class="originText" id="pOrigin">PÉROU</span></div>
+            </div>
+            <div class="legal">
+              <div id="pCategory">CATÉGORIE : 1</div>
+              <div id="pCaliber">CALIBRE : 18/22</div>
+              <div id="pTreatment">TRAITEMENT : Non traité après récolte</div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
-</div>
+
+  <section id="settingsPanel" class="panel">
+    <div class="card">
+      <h2>Sauvegarde et transfert</h2>
+      <div class="actions">
+        <button class="dark" onclick="exportData()">Exporter les produits</button>
+        <label class="fileBtn">Importer un fichier<input id="importFile" type="file" accept=".json" hidden></label>
+        <button class="red" onclick="clearAll()">Effacer toutes les données</button>
+      </div>
+      <p class="hint">Les produits sont sauvegardés automatiquement sur l’appareil.</p>
+    </div>
+  </section>
 </main>
 
 <script>
-const $=id=>document.getElementById(id);
-let photoData="";
+const $ = id => document.getElementById(id);
+const fields = ["name","subtitle","mainPrice","promoType","buyQty","freeQty","promoLabel","promoQty","promoPrice","origin","category","caliber","treatment","photoUrl"];
+let products = JSON.parse(localStorage.getItem("affiches-products") || "[]");
+let selected = -1;
+let photoData = "";
 
-function formatPrice(v){
-  const n=Number(v);
-  if(!Number.isFinite(n)) return "";
-  const [a,b]=n.toFixed(2).split(".");
-  return `${a}€${b}`;
+const imageLibrary = [
+  ["Pomme","images/pomme.svg"],["Poire","images/poire.svg"],["Banane","images/banane.svg"],["Orange","images/orange.svg"],
+  ["Citron","images/citron.svg"],["Fraise","images/fraise.svg"],["Tomate","images/tomate.svg"],["Carotte","images/carotte.svg"],
+  ["Courgette","images/courgette.svg"],["Aubergine","images/aubergine.svg"],["Poivron","images/poivron.svg"],["Pomme de terre","images/pomme-de-terre.svg"]
+];
+function renderLibrary(){
+  const grid=$("libraryGrid");
+  grid.innerHTML=imageLibrary.map(([name,src])=>`<button type="button" class="library-item" data-name="${name}" data-src="${src}"><img src="${src}" alt="${name}"><span>${name}</span></button>`).join("");
+  grid.querySelectorAll(".library-item").forEach(btn=>btn.addEventListener("click",()=>{
+    photoData=""; $("photoUrl").value=btn.dataset.src;
+    if(!$("name").value.trim()) $("name").value=btn.dataset.name;
+    grid.querySelectorAll(".library-item").forEach(x=>x.classList.remove("selected"));
+    btn.classList.add("selected"); updatePreview();
+  }));
 }
-function mode(){
-  return $("modeKg").checked?"kg":"pièce";
+function promoComputation(o){
+  const base=Number(o.mainPrice), type=o.promoType;
+  if(!Number.isFinite(base)||base<=0||type==="none") return {label:"",price:"",unit:"",summary:"Aucune promotion sélectionnée."};
+  if(type==="free"){
+    const buy=Math.max(1,Number(o.buyQty)||1), free=Math.max(1,Number(o.freeQty)||1), total=buy+free;
+    const lot=buy*base, unit=lot/total, saving=free*base;
+    return {
+      label:o.promoLabel||`${buy}+${free} OFFERT${free>1?"S":""}`,
+      price:lot,
+      unit,
+      summary:`Le client reçoit ${total} unités et paie ${buy}. Prix de revient : ${euro(unit)} € / ${o.saleMode==="kg"?"kg":"pièce"}. Économie : ${euro(saving)} €.`
+    };
+  }
+  const qty=Math.max(1,Number(o.promoQty)||1), lot=Number(o.promoPrice);
+  if(!Number.isFinite(lot)||lot<0) return {label:o.promoLabel||`LES ${qty}`,price:"",unit:"",summary:"Indiquez le prix du lot."};
+  const unit=lot/qty, normal=qty*base, saving=Math.max(0,normal-lot);
+  return {
+    label:o.promoLabel||`LES ${qty}`,
+    price:lot,
+    unit,
+    summary:`Prix de revient : ${euro(unit)} € / ${o.saleMode==="kg"?"kg":"pièce"}. Économie par lot : ${euro(saving)} €.`
+  };
+}
+function updatePromoFields(){
+  const type=$("promoType").value;
+  $("buyQtyWrap").style.display=type==="free"?"block":"none";
+  $("freeQtyWrap").style.display=type==="free"?"block":"none";
+  $("bundleQtyWrap").style.display=(type==="custom"||type==="bundle")?"block":"none";
+  $("bundlePriceWrap").style.display=(type==="custom"||type==="bundle")?"block":"none";
+  $("promoFields").style.display=type==="none"?"none":"block";
+}
+
+function euro(v){
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toFixed(2).replace(".",",") : "";
+}
+function getSaleMode(){return $("saleKg").checked?"kg":"piece"}
+function modeLabel(mode){return mode==="kg"?"€ / KG":"€ / PIÈCE"}
+function readForm(){
+  const o={}; fields.forEach(f=>o[f]=$(f).value.trim());
+  o.saleMode=getSaleMode(); o.logoIGP=$("logoIGP").checked; o.logoAOP=$("logoAOP").checked; o.logoLR=$("logoLR").checked;
+  o.photo = photoData || $("photoUrl").value.trim();
+  return o;
+}
+function writeForm(o={}){
+  fields.forEach(f=>$(f).value=o[f] ?? "");
+  $("saleKg").checked=o.saleMode==="kg"; $("salePiece").checked=o.saleMode!=="kg";
+  $("logoIGP").checked=!!o.logoIGP; $("logoAOP").checked=!!o.logoAOP; $("logoLR").checked=!!o.logoLR;
+  photoData=o.photo && o.photo.startsWith("data:") ? o.photo : "";
+  $("photoFile").value=""; updatePromoFields(); updatePreview();
+}
+function newProduct(){selected=-1;writeForm({saleMode:"piece",promoType:"none",buyQty:"2",freeQty:"1",promoQty:"2"});showTab("dataPanel");renderList()}
+function saveCurrent(){
+  const o=readForm();
+  if(!o.name){alert("Indiquez la désignation du produit.");return}
+  if(selected<0){products.push(o);selected=products.length-1}else products[selected]=o;
+  persist();renderList();updatePreview();showTab("previewPanel");
+}
+function duplicateCurrent(){
+  const o=readForm(); o.name=(o.name||"PRODUIT")+" - COPIE"; products.push(o); selected=products.length-1;
+  persist();renderList();writeForm(o)
+}
+function deleteCurrent(){
+  if(selected<0)return;
+  if(confirm("Supprimer ce produit ?")){products.splice(selected,1);selected=-1;persist();renderList();newProduct()}
+}
+function selectProduct(i){selected=i;writeForm(products[i]);renderList();showTab("previewPanel")}
+function persist(){localStorage.setItem("affiches-products",JSON.stringify(products))}
+function renderList(){
+  $("productsBody").innerHTML=products.map((p,i)=>`
+    <tr class="${i===selected?'selected':''}">
+      <td>${escapeHtml(p.name)}</td><td>${escapeHtml(p.origin||"")}</td>
+      <td>${euro(p.mainPrice)} €</td>
+      <td><button class="mini dark" onclick="selectProduct(${i})">Ouvrir</button></td>
+    </tr>`).join("") || `<tr><td colspan="4">Aucun produit enregistré.</td></tr>`;
 }
 function fitOrigin(){
-  const el=$("pOrigin");
-  el.style.transform="scaleX(1)";
-  requestAnimationFrame(()=>{
-    const available=el.parentElement.clientWidth-($("flag").style.display==="inline-block"?88:0);
-    const natural=el.scrollWidth;
-    const scale=natural>available ? Math.max(.58,available/natural) : 1;
-    el.style.transform=`scaleX(${scale})`;
-  });
-}
-function fitTitle(){
-  const el=$("pName"); let s=58; el.style.fontSize=s+"px";
-  requestAnimationFrame(()=>{
-    while(s>28 && (el.scrollHeight>el.parentElement.clientHeight-16 || el.scrollWidth>el.parentElement.clientWidth-130)){
-      s-=2; el.style.fontSize=s+"px";
-    }
-  });
+  const el=$("pOrigin"); el.style.transform="scaleX(1)";
+  requestAnimationFrame(()=>{const max=el.parentElement.clientWidth-120; const s=Math.min(1,max/Math.max(1,el.scrollWidth)); el.style.transform=`scaleX(${Math.max(.35,s)})`;});
 }
 function fitPromo(){
-  const el=$("pPromo"); let s=31; el.style.fontSize=s+"px";
-  requestAnimationFrame(()=>{
-    const max=el.parentElement.clientWidth*.48;
-    while(s>16 && el.scrollWidth>max){s-=1;el.style.fontSize=s+"px"}
-  });
+  const el=$("pPromoLabel"); let size=54; el.style.fontSize=size+"px";
+  requestAnimationFrame(()=>{const maxW=el.parentElement.clientWidth*.9,maxH=el.parentElement.clientHeight*.25;
+    while(size>18&&(el.scrollWidth>maxW||el.scrollHeight>maxH)){size-=2;el.style.fontSize=size+"px";}});
 }
-function update(){
-  const name=$("name").value.trim()||"DÉSIGNATION";
-  const origin=$("origin").value.trim()||"ORIGINE";
-  const m=mode();
-  $("pName").textContent=name.toUpperCase();
-  $("pCategory").textContent=($("category").value.trim()||"").toUpperCase();
-  $("pOrigin").textContent=origin.toUpperCase();
-  $("pTreatment").textContent=($("treatment").value.trim()||"").toUpperCase();
-  $("flag").style.display=origin.toUpperCase()==="FRANCE"?"inline-block":"none";
-  $("pPrice").textContent=formatPrice($("price").value)||"0€00";
-  $("pMode").textContent=m==="kg"?"LE KG":"LA PIÈCE";
-  $("pIgp").style.display=$("igp").checked?"block":"none";
-  $("pAop").style.display=$("aop").checked?"block":"none";
-  $("pLr").style.display=$("lr").checked?"block":"none";
-
-  const qty=Number($("lotQty").value), lot=Number($("lotPrice").value);
-  const promo=$("promo").value.trim();
-  const hasLot=qty>0 && lot>=0;
-  $("promoBox").style.display=(promo||hasLot)?"flex":"none";
-  $("pPromo").textContent=(promo||"PROMOTION").toUpperCase();
-  $("pLotPrice").textContent=hasLot?formatPrice(lot):"";
-  $("pLotDetail").textContent=hasLot?`${String(qty).replace(".",",")} ${m==="kg"?"KG":"PIÈCES"} POUR ${formatPrice(lot)}`:"";
-  if(hasLot){
-    const unit=lot/qty;
-    $("pUnitPrice").innerHTML=`Soit <b>${formatPrice(unit)}</b> ${m==="kg"?"le kg":"la pièce"}`;
-  }else $("pUnitPrice").textContent="";
-
-  fitTitle(); fitOrigin(); fitPromo();
-  saveLocal();
+function updatePreview(){
+  const o=readForm();
+  $("pName").textContent=(o.name||"DÉSIGNATION").toUpperCase();
+  $("pUnit").textContent=modeLabel(o.saleMode);
+  $("pMainPrice").textContent=euro(o.mainPrice)||"0,00";
+  const pc=promoComputation(o);
+  $("pPromoLabel").textContent=(pc.label||"").toUpperCase();
+  $("pPromoPrice").textContent=pc.price!==""?euro(pc.price)+" €":"";
+  $("pUnitPrice").textContent=pc.unit!==""?`Soit ${euro(pc.unit)} € / ${o.saleMode==="kg"?"kg":"pièce"}`:"";
+  $("promoCalc").textContent=pc.summary;
+  const origin=(o.origin||"ORIGINE").toUpperCase(); $("pOrigin").textContent=origin; $("frFlag").style.display=origin==="FRANCE"?"inline-block":"none";
+  $("pCategory").textContent=o.category?`CATÉGORIE : ${o.category}`:""; $("pCaliber").textContent=o.caliber?`CALIBRE : ${o.caliber}`:""; $("pTreatment").textContent=o.treatment?`TRAITEMENT : ${o.treatment}`:"";
+  $("pLogoIGP").style.display=o.logoIGP?"block":"none"; $("pLogoAOP").style.display=o.logoAOP?"block":"none"; $("pLogoLR").style.display=o.logoLR?"block":"none";
+  const src=photoData||o.photoUrl; $("pPhoto").hidden=!src; $("pPlaceholder").hidden=!!src; if(src)$("pPhoto").src=src;
+  fitPromo(); fitOrigin();
 }
-function exclusive(changed){
-  if(changed==="kg" && $("modeKg").checked)$("modePiece").checked=false;
-  if(changed==="piece" && $("modePiece").checked)$("modeKg").checked=false;
-  if(!$("modeKg").checked&&!$("modePiece").checked)$("modeKg").checked=true;
-  update();
+function showTab(id){
+  document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===id));
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));
 }
-function data(){
-  return {name:$("name").value,category:$("category").value,caliber:$("caliber").value,origin:$("origin").value,treatment:$("treatment").value,
-    mode:mode(),price:$("price").value,lotQty:$("lotQty").value,lotPrice:$("lotPrice").value,promo:$("promo").value,
-    igp:$("igp").checked,aop:$("aop").checked,lr:$("lr").checked,photo:photoData};
-}
-function apply(d={}){
-  ["name","category","caliber","origin","treatment","price","lotQty","lotPrice","promo"].forEach(k=>{if(d[k]!==undefined)$(k).value=d[k]});
-  $("modeKg").checked=d.mode!=="pièce"; $("modePiece").checked=d.mode==="pièce";
-  $("igp").checked=!!d.igp;$("aop").checked=!!d.aop;$("lr").checked=!!d.lr;
-  photoData=d.photo||"";
-  if(photoData){$("pPhoto").src=photoData;$("pPhoto").hidden=false;$("placeholder").hidden=true}
-  else{$("pPhoto").hidden=true;$("placeholder").hidden=false}
-  update();
-}
-function saveLocal(){localStorage.setItem("affiches-marche-v3",JSON.stringify(data()))}
-function saveProduct(){saveLocal();alert("Affiche enregistrée sur cet appareil.")}
-function resetForm(){
-  if(!confirm("Réinitialiser l'affiche ?"))return;
-  photoData=""; localStorage.removeItem("affiches-marche-v3");
-  apply({name:"",category:"",caliber:"",origin:"France",treatment:"",mode:"kg",price:"",lotQty:"",lotPrice:"",promo:"",igp:false,aop:false,lr:false});
-}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+fields.forEach(f=>$(f).addEventListener("input",updatePreview));
+["saleKg","salePiece"].forEach(id=>$(id).addEventListener("change",()=>{
+  if(id==="saleKg"&&$("saleKg").checked)$("salePiece").checked=false;
+  if(id==="salePiece"&&$("salePiece").checked)$("saleKg").checked=false;
+  if(!$("saleKg").checked&&!$("salePiece").checked)$("salePiece").checked=true; updatePreview();
+}));
+["logoIGP","logoAOP","logoLR"].forEach(id=>$(id).addEventListener("change",updatePreview));
+$("promoType").addEventListener("change",()=>{updatePromoFields();updatePreview()});
+$("photoFile").addEventListener("change",e=>{
+  const file=e.target.files[0]; if(!file)return;
+  const r=new FileReader(); r.onload=()=>{photoData=r.result;updatePreview()}; r.readAsDataURL(file);
+});
+$("importFile").addEventListener("change",e=>{
+  const file=e.target.files[0]; if(!file)return;
+  const r=new FileReader(); r.onload=()=>{
+    try{const d=JSON.parse(r.result); if(!Array.isArray(d))throw 0; products=d;persist();renderList();alert("Import terminé.")}
+    catch{alert("Fichier invalide.")}
+  };r.readAsText(file);
+});
 function exportData(){
-  const blob=new Blob([JSON.stringify(data(),null,2)],{type:"application/json"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="affiche-produit.json";a.click();URL.revokeObjectURL(a.href);
+  const blob=new Blob([JSON.stringify(products,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="affiches-produits.json";a.click();URL.revokeObjectURL(a.href);
 }
-document.querySelectorAll("input").forEach(el=>{if(!["photo","importData","modeKg","modePiece"].includes(el.id))el.addEventListener("input",update)});
-["igp","aop","lr"].forEach(id=>$(id).addEventListener("change",update));
-$("modeKg").addEventListener("change",()=>exclusive("kg"));
-$("modePiece").addEventListener("change",()=>exclusive("piece"));
-$("photo").addEventListener("change",e=>{
-  const f=e.target.files[0];if(!f)return;const r=new FileReader();
-  r.onload=()=>{photoData=r.result;$("pPhoto").src=photoData;$("pPhoto").hidden=false;$("placeholder").hidden=true;update()};r.readAsDataURL(f);
-});
-$("importData").addEventListener("change",e=>{
-  const f=e.target.files[0];if(!f)return;const r=new FileReader();
-  r.onload=()=>{try{apply(JSON.parse(r.result))}catch{alert("Fichier invalide.")}};r.readAsText(f);
-});
-const saved=localStorage.getItem("affiches-marche-v3");
-if(saved){try{apply(JSON.parse(saved))}catch{update()}}else update();
-if("serviceWorker" in navigator)navigator.serviceWorker.register("./sw.js");
+function clearAll(){if(confirm("Effacer tous les produits enregistrés ?")){products=[];persist();renderList();newProduct()}}
+function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+if(products.length){selected=0;writeForm(products[0])}else{
+  renderLibrary(); writeForm({name:"AVOCAT HASS",saleMode:"piece",mainPrice:"1.00",promoType:"bundle",promoLabel:"LES 2",promoQty:"2",promoPrice:"1.50",origin:"PÉROU",category:"1",caliber:"18/22",treatment:"Non traité après récolte",photoUrl:"images/avocat.svg"});
+}
+renderList();
+
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 </script>
 </body>
 </html>
