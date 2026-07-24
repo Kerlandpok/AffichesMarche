@@ -304,7 +304,100 @@ async function deleteUserImage(id,name){if(!confirm(`Supprimer "${name}" de la b
 function hideBuiltinImage(name){if(!confirm(`Retirer "${name}" de la bibliothèque ?`))return;if(!hiddenBuiltinImages.includes(name))hiddenBuiltinImages.push(name);localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));renderLibrary();}
 function renameBuiltinImage(name,src){const next=prompt("Nouveau nom de cette photo :",name);if(next===null||!next.trim())return;addUserImage(next.trim(),src).then(()=>{if(!hiddenBuiltinImages.includes(name))hiddenBuiltinImages.push(name);localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));renderLibrary();});}
 function humanBytes(n){if(!n)return "—";if(n<1024)return n+" o";if(n<1024*1024)return (n/1024).toFixed(0)+" Ko";return (n/1024/1024).toFixed(1)+" Mo";}
-function renderLibrary(){const grid=$("libraryGrid");const builtins=builtinImageLibrary.filter(([name])=>!hiddenBuiltinImages.includes(name)).map(([name,src])=>({kind:"builtin",name,src}));const customs=userImageLibrary.map(x=>({kind:"user",name:x.name,src:x.dataUrl,id:x.id,finalBytes:x.finalBytes}));const all=[...customs,...builtins];grid.innerHTML=all.map(item=>`<div class="library-item" data-name="${item.name.replace(/"/g,'&quot;')}" data-src="${item.src}" data-kind="${item.kind}" ${item.id?`data-id="${item.id}"`:""}>${item.kind==="user"?'<span class="library-badge">PERSO</span>':''}<img src="${item.src}" alt="${item.name}"><span>${item.name}</span>${item.kind==="user"&&item.finalBytes?`<div style="font-size:9px;color:#777">${humanBytes(item.finalBytes)}</div>`:''}<div class="library-actions"><button type="button" class="rename">Renommer</button><button type="button" class="delete">Supprimer</button></div></div>`).join("");$("libraryInfo").textContent=`${all.length} photo${all.length>1?"s":""} dans la bibliothèque, dont ${customs.length} personnelle${customs.length>1?"s":""}.`;grid.querySelectorAll(".library-item").forEach(card=>{card.querySelector("img").addEventListener("click",()=>{selectedLibraryImage=card.dataset.src;selectedLibraryName=card.dataset.name;grid.querySelectorAll(".library-item").forEach(x=>x.classList.remove("selected"));card.classList.add("selected");$("applyLibraryImage").style.display="block";applyImageToPoster(card.dataset.src,card.dataset.name);});card.querySelector(".rename").addEventListener("click",e=>{e.stopPropagation();card.dataset.kind==="user"?renameUserImage(Number(card.dataset.id),card.dataset.name):renameBuiltinImage(card.dataset.name,card.dataset.src);});card.querySelector(".delete").addEventListener("click",e=>{e.stopPropagation();card.dataset.kind==="user"?deleteUserImage(Number(card.dataset.id),card.dataset.name):hideBuiltinImage(card.dataset.name);});});}
+
+function renderLibrary(){
+  const grid=$("libraryGrid");
+  if(!grid) return;
+
+  const builtins=builtinImageLibrary
+    .filter(([name])=>!hiddenBuiltinImages.includes(name))
+    .map(([name,src])=>({kind:"builtin",name,src}));
+
+  const customs=userImageLibrary
+    .map(x=>({kind:"user",name:x.name,src:x.dataUrl,id:x.id,originalBytes:x.originalBytes,finalBytes:x.finalBytes}));
+
+  const all=[...customs,...builtins];
+  grid.innerHTML="";
+
+  for(const item of all){
+    const card=document.createElement("div");
+    card.className="library-item";
+    card.dataset.kind=item.kind;
+    if(item.id!=null) card.dataset.id=String(item.id);
+
+    if(item.kind==="user"){
+      const badge=document.createElement("span");
+      badge.className="library-badge";
+      badge.textContent="PERSO";
+      card.appendChild(badge);
+    }
+
+    const img=document.createElement("img");
+    img.alt=item.name;
+    // Important : on affecte la source directement à l'élément,
+    // sans injecter la grosse image base64 dans innerHTML.
+    img.src=item.src;
+    img.loading="lazy";
+    card.appendChild(img);
+
+    const title=document.createElement("span");
+    title.textContent=item.name;
+    card.appendChild(title);
+
+    if(item.kind==="user" && item.finalBytes){
+      const size=document.createElement("div");
+      size.style.fontSize="9px";
+      size.style.color="#777";
+      size.textContent=humanBytes(item.finalBytes);
+      card.appendChild(size);
+    }
+
+    const actions=document.createElement("div");
+    actions.className="library-actions";
+
+    const rename=document.createElement("button");
+    rename.type="button";
+    rename.className="rename";
+    rename.textContent="Renommer";
+
+    const del=document.createElement("button");
+    del.type="button";
+    del.className="delete";
+    del.textContent="Supprimer";
+
+    actions.append(rename,del);
+    card.appendChild(actions);
+
+    img.addEventListener("click",()=>{
+      selectedLibraryImage=item.src;
+      selectedLibraryName=item.name;
+      grid.querySelectorAll(".library-item").forEach(x=>x.classList.remove("selected"));
+      card.classList.add("selected");
+      $("applyLibraryImage").style.display="block";
+      $("imageChoiceStatus").textContent=`${item.name} sélectionné — l’image est intégrée à l’affiche.`;
+      applyImageToPoster(item.src,item.name);
+    });
+
+    title.addEventListener("click",()=>img.click());
+
+    rename.addEventListener("click",e=>{
+      e.stopPropagation();
+      if(item.kind==="user") renameUserImage(Number(item.id),item.name);
+      else renameBuiltinImage(item.name,item.src);
+    });
+
+    del.addEventListener("click",e=>{
+      e.stopPropagation();
+      if(item.kind==="user") deleteUserImage(Number(item.id),item.name);
+      else hideBuiltinImage(item.name);
+    });
+
+    grid.appendChild(card);
+  }
+
+  $("libraryInfo").textContent=
+    `${all.length} photo${all.length>1?"s":""} dans la bibliothèque, dont ${customs.length} personnelle${customs.length>1?"s":""}.`;
+}
 async function compressImageFile(file){const bitmap=await createImageBitmap(file);const maxSide=1200,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);if(bitmap.close)bitmap.close();let blob=await new Promise(r=>canvas.toBlob(r,"image/webp",0.78));if(!blob)blob=await new Promise(r=>canvas.toBlob(r,"image/jpeg",0.80));const dataUrl=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=()=>reject(fr.error);fr.readAsDataURL(blob);});return {dataUrl,originalBytes:file.size||0,finalBytes:blob.size};}
 function promoComputation(o){
   const base=Number(o.mainPrice), type=o.promoType;
@@ -433,18 +526,52 @@ fields.forEach(f=>$(f).addEventListener("input",updatePreview));
 $("promoType").addEventListener("change",()=>{updatePromoFields();updatePreview()});
 $("applyLibraryImage").addEventListener("click",()=>{if(selectedLibraryImage)applyImageToPoster(selectedLibraryImage,selectedLibraryName||"");});
 $("photoFile").addEventListener("change",async e=>{
-  const file=e.target.files[0]; if(!file)return;
+  const file=e.target.files[0];
+  if(!file)return;
+
   try{
-    $("imageChoiceStatus").textContent="Optimisation de la photo en cours…";
+    $("imageChoiceStatus").textContent="Optimisation et ajout à la bibliothèque…";
+
     const result=await compressImageFile(file);
-    const baseName=(file.name||"Nouvelle photo").replace(/\.[^.]+$/,'');
-    let name=prompt("Nom de la photo dans la bibliothèque :",baseName); if(name===null)name=baseName; name=(name||baseName).trim()||baseName;
+    const baseName=(file.name||"Nouvelle photo").replace(/\.[^.]+$/,"");
+    let name=prompt("Nom de la photo dans la bibliothèque :",baseName);
+    if(name===null) name=baseName;
+    name=(name||baseName).trim()||baseName;
+
     await addUserImage(name,result.dataUrl,result.originalBytes,result.finalBytes);
-    photoData=result.dataUrl; $("photoUrl").value=""; selectedLibraryImage=result.dataUrl; selectedLibraryName=name;
-    $("imageChoiceStatus").textContent=`${name} ajouté : ${humanBytes(result.originalBytes)} → ${humanBytes(result.finalBytes)}.`;
+
+    // Recharge explicitement la base puis redessine la bibliothèque.
+    await loadUserImages();
+    renderLibrary();
+
+    const created=[...userImageLibrary]
+      .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))
+      .find(x=>x.name===name) || userImageLibrary[userImageLibrary.length-1];
+
+    const src=created?.dataUrl || result.dataUrl;
+    photoData=src;
+    $("photoUrl").value="";
+    selectedLibraryImage=src;
+    selectedLibraryName=name;
+
+    $("imageChoiceStatus").textContent=
+      `✓ ${name} ajouté à la bibliothèque (${humanBytes(result.originalBytes)} → ${humanBytes(result.finalBytes)}).`;
+
+    // Sélection visuelle de la nouvelle photo.
+    const cards=[...$("libraryGrid").querySelectorAll(".library-item")];
+    const customCards=cards.filter(c=>c.dataset.kind==="user");
+    if(customCards.length){
+      customCards[0].classList.add("selected");
+    }
+
     updatePreview();
-  }catch(err){console.error(err);alert("Impossible d’optimiser cette photo.");}
-  e.target.value="";
+  }catch(err){
+    console.error("Ajout photo :",err);
+    alert("La photo n’a pas pu être ajoutée à la bibliothèque. Réessayez avec une autre image.");
+    $("imageChoiceStatus").textContent="Échec de l’ajout de la photo.";
+  }finally{
+    e.target.value="";
+  }
 });
 $("importFile").addEventListener("change",e=>{
   const file=e.target.files[0]; if(!file)return;
