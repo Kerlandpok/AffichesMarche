@@ -1,18 +1,13 @@
-AFFICHES MARCHÉ — V2.3 XIAOMI 14T
+AFFICHES MARCHÉ — V2.4 AFFICHE CORRIGÉE
 
-Correctifs par rapport à la V2.2 :
-- suppression des gros champs trop hauts ;
-- suppression de la mise en page qui faisait déborder les boutons ;
-- barre d'actions plus compacte ;
-- bibliothèque adaptée sans rectangle vide géant ;
-- sélection de famille sur toute la largeur ;
-- grille photos 2 colonnes ;
-- fenêtre bibliothèque plein écran ;
-- tableaux défilables horizontalement au lieu d'élargir la page ;
-- aperçu affiche limité à la largeur du téléphone.
+Correction principale :
+- l'affiche garde maintenant ses proportions de conception ;
+- sur téléphone, toute l'affiche est réduite d'un seul bloc ;
+- les textes et les prix ne se chevauchent plus ;
+- le rendu impression/PDF reste en A4.
 
-Sur GitHub, remplacer uniquement :
+Sur GitHub, remplacer seulement :
 - index.html
 - sw.js
 
-La mention en bas à droite doit afficher « V2.3 Xiaomi 14T ».
+La mention en bas à droite doit afficher « V2.4 Affiche corrigée ».
