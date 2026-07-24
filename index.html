@@ -79,7 +79,7 @@
     .library-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
     .library-item{border:2px solid transparent;border-radius:10px;background:#fff;padding:6px;cursor:pointer;text-align:center;font-size:11px;font-weight:700}
     .library-item:hover,.library-item.selected{border-color:#111}
-    .library-item img{width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:8px;background:#f8f8f8}
+    .library-item img{width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:8px;background:#fff;border:1px solid #eee}
     .calc-box{grid-column:1/-1;background:#fff7df;border:1px solid #f0d78e;border-radius:10px;padding:10px;font-size:13px;font-weight:700}
     @media(max-width:950px){
       .grid{grid-template-columns:1fr}
@@ -171,6 +171,8 @@
           <div class="full">
             <label>Bibliothèque d’images intégrée</label>
             <div id="libraryGrid" class="library-grid"></div>
+            <div id="imageChoiceStatus" class="hint" style="margin-top:8px">Touchez une image pour l’intégrer directement à l’affiche.</div>
+            <button type="button" class="green" id="applyLibraryImage" style="margin-top:8px;width:100%;display:none">Intégrer l’image sélectionnée à l’affiche</button>
           </div>
         </div>
         <div class="actions">
@@ -261,17 +263,28 @@ let photoData = "";
 
 const imageLibrary = [
   ["Pomme","images/pomme.svg"],["Poire","images/poire.svg"],["Banane","images/banane.svg"],["Orange","images/orange.svg"],
-  ["Citron","images/citron.svg"],["Fraise","images/fraise.svg"],["Tomate","images/tomate.svg"],["Carotte","images/carotte.svg"],
-  ["Courgette","images/courgette.svg"],["Aubergine","images/aubergine.svg"],["Poivron","images/poivron.svg"],["Pomme de terre","images/pomme-de-terre.svg"]
+  ["Citron","images/citron.svg"],["Fraise","images/fraise.svg"],["Tomate","images/tomate.svg"],["Avocat","images/avocat.svg"],
+  ["Carotte","images/carotte.svg"],["Courgette","images/courgette.svg"],["Aubergine","images/aubergine.svg"],
+  ["Poivron","images/poivron.svg"],["Pomme de terre","images/pomme-de-terre.svg"]
 ];
+let selectedLibraryImage = "";
+function applyImageToPoster(src,name=""){
+  photoData="";
+  $("photoUrl").value=src||"";
+  if(name && !$("name").value.trim()) $("name").value=name;
+  $("imageChoiceStatus").textContent=src ? `Image intégrée : ${name||"image sélectionnée"}` : "Aucune image sélectionnée.";
+  updatePreview();
+}
 function renderLibrary(){
   const grid=$("libraryGrid");
-  grid.innerHTML=imageLibrary.map(([name,src])=>`<button type="button" class="library-item" data-name="${name}" data-src="${src}"><img src="${src}" alt="${name}"><span>${name}</span></button>`).join("");
+  grid.innerHTML=imageLibrary.map(([name,src])=>`<button type="button" class="library-item" data-name="${name}" data-src="${src}" title="Utiliser ${name}"><img src="${src}" alt="${name}"><span>${name}</span></button>`).join("");
   grid.querySelectorAll(".library-item").forEach(btn=>btn.addEventListener("click",()=>{
-    photoData=""; $("photoUrl").value=btn.dataset.src;
-    if(!$("name").value.trim()) $("name").value=btn.dataset.name;
+    selectedLibraryImage=btn.dataset.src;
     grid.querySelectorAll(".library-item").forEach(x=>x.classList.remove("selected"));
-    btn.classList.add("selected"); updatePreview();
+    btn.classList.add("selected");
+    $("applyLibraryImage").style.display="block";
+    $("imageChoiceStatus").textContent=`${btn.dataset.name} sélectionné — l’image est intégrée à l’affiche.`;
+    applyImageToPoster(btn.dataset.src,btn.dataset.name);
   }));
 }
 function promoComputation(o){
@@ -323,7 +336,10 @@ function writeForm(o={}){
   $("saleKg").checked=o.saleMode==="kg"; $("salePiece").checked=o.saleMode!=="kg";
   $("logoIGP").checked=!!o.logoIGP; $("logoAOP").checked=!!o.logoAOP; $("logoLR").checked=!!o.logoLR;
   photoData=o.photo && o.photo.startsWith("data:") ? o.photo : "";
-  $("photoFile").value=""; updatePromoFields(); updatePreview();
+  if(!photoData && !o.photoUrl && o.photo) $("photoUrl").value=o.photo;
+  $("photoFile").value="";
+  $("imageChoiceStatus").textContent=(photoData||$("photoUrl").value)?"Image enregistrée intégrée à l’affiche.":"Touchez une image pour l’intégrer directement à l’affiche.";
+  updatePromoFields(); updatePreview();
 }
 function newProduct(){selected=-1;writeForm({saleMode:"piece",promoType:"none",buyQty:"2",freeQty:"1",promoQty:"2"});showTab("dataPanel");renderList()}
 function saveCurrent(){
@@ -372,7 +388,15 @@ function updatePreview(){
   const origin=(o.origin||"ORIGINE").toUpperCase(); $("pOrigin").textContent=origin; $("frFlag").style.display=origin==="FRANCE"?"inline-block":"none";
   $("pCategory").textContent=o.category?`CATÉGORIE : ${o.category}`:""; $("pCaliber").textContent=o.caliber?`CALIBRE : ${o.caliber}`:""; $("pTreatment").textContent=o.treatment?`TRAITEMENT : ${o.treatment}`:"";
   $("pLogoIGP").style.display=o.logoIGP?"block":"none"; $("pLogoAOP").style.display=o.logoAOP?"block":"none"; $("pLogoLR").style.display=o.logoLR?"block":"none";
-  const src=photoData||o.photoUrl; $("pPhoto").hidden=!src; $("pPlaceholder").hidden=!!src; if(src)$("pPhoto").src=src;
+  const src=photoData||o.photoUrl;
+  $("pPhoto").hidden=!src; $("pPlaceholder").hidden=!!src;
+  if(src){
+    $("pPhoto").onload=()=>{$("pPhoto").hidden=false;$("pPlaceholder").hidden=true};
+    $("pPhoto").onerror=()=>{$("pPhoto").hidden=true;$("pPlaceholder").hidden=false;$("pPlaceholder").textContent="IMAGE INTROUVABLE"};
+    $("pPhoto").src=src;
+  }else{
+    $("pPlaceholder").textContent="PHOTO DU PRODUIT";
+  }
   fitPromo(); fitOrigin();
 }
 function showTab(id){
@@ -388,9 +412,24 @@ fields.forEach(f=>$(f).addEventListener("input",updatePreview));
 }));
 ["logoIGP","logoAOP","logoLR"].forEach(id=>$(id).addEventListener("change",updatePreview));
 $("promoType").addEventListener("change",()=>{updatePromoFields();updatePreview()});
+$("applyLibraryImage").addEventListener("click",()=>{
+  if(!selectedLibraryImage)return;
+  const item=imageLibrary.find(x=>x[1]===selectedLibraryImage);
+  applyImageToPoster(selectedLibraryImage,item?item[0]:"");
+});
 $("photoFile").addEventListener("change",e=>{
   const file=e.target.files[0]; if(!file)return;
-  const r=new FileReader(); r.onload=()=>{photoData=r.result;updatePreview()}; r.readAsDataURL(file);
+  const r=new FileReader();
+  r.onload=()=>{
+    photoData=r.result;
+    $("photoUrl").value="";
+    selectedLibraryImage="";
+    document.querySelectorAll(".library-item").forEach(x=>x.classList.remove("selected"));
+    $("applyLibraryImage").style.display="none";
+    $("imageChoiceStatus").textContent=`Photo personnelle intégrée : ${file.name}`;
+    updatePreview();
+  };
+  r.readAsDataURL(file);
 });
 $("importFile").addEventListener("change",e=>{
   const file=e.target.files[0]; if(!file)return;
@@ -406,8 +445,9 @@ function exportData(){
 function clearAll(){if(confirm("Effacer tous les produits enregistrés ?")){products=[];persist();renderList();newProduct()}}
 function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
+renderLibrary();
 if(products.length){selected=0;writeForm(products[0])}else{
-  renderLibrary(); writeForm({name:"AVOCAT HASS",saleMode:"piece",mainPrice:"1.00",promoType:"bundle",promoLabel:"LES 2",promoQty:"2",promoPrice:"1.50",origin:"PÉROU",category:"1",caliber:"18/22",treatment:"Non traité après récolte",photoUrl:"images/avocat.svg"});
+  writeForm({name:"AVOCAT HASS",saleMode:"piece",mainPrice:"1.00",promoType:"bundle",promoLabel:"LES 2",promoQty:"2",promoPrice:"1.50",origin:"PÉROU",category:"1",caliber:"18/22",treatment:"Non traité après récolte",photoUrl:"images/avocat.svg"});
 }
 renderList();
 
