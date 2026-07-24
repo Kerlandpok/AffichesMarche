@@ -1,13 +1,11 @@
-AFFICHES MARCHÉ — V2 VRAIES PHOTOS
+AFFICHES MARCHÉ — BIBLIOTHÈQUE PERSONNALISABLE
 
-Cette version conserve le générateur et le visuel V2 avec :
-- vraies photographies de fruits et légumes ;
-- toucher une photo = intégration immédiate sur l'affiche ;
-- photo personnelle toujours disponible ;
-- promotions automatiques 2+1 offert, 3+1 offert, X+Y offert ;
-- lots à prix spécial, par exemple 1 € pièce / 1,50 € les 2 ;
-- calcul automatique du prix de revient au kg ou à la pièce.
+- Toute photo choisie dans la galerie est automatiquement compressée avant stockage.
+- Côté le plus long limité à 1200 px.
+- WebP qualité ~78 % (JPEG de secours).
+- La photo est ajoutée à la bibliothèque et intégrée à l'affiche.
+- Renommer et supprimer sont disponibles sous chaque photo.
+- Les photos personnelles sont stockées dans IndexedDB, mieux adapté que localStorage pour les images.
+- Le poids avant/après optimisation est indiqué après l'ajout.
 
-Pour mettre à jour GitHub :
-remplacez index.html et sw.js et ajoutez CREDITS_PHOTOS.txt.
-L'ancien dossier images contenant les dessins peut être supprimé.
+Les photos personnelles restent locales au navigateur/appareil. Effacer les données du site ou désinstaller l'application peut supprimer cette bibliothèque.

@@ -102,7 +102,15 @@
       .poster-shell{padding:0;background:#fff;border-radius:0;overflow:visible}
       .poster{width:210mm;height:297mm;aspect-ratio:auto;box-shadow:none;page-break-after:always}
     }
-  </style>
+  
+    .library-item{position:relative}
+    .library-actions{display:flex;gap:4px;margin-top:5px}
+    .library-actions button{flex:1;padding:5px 6px;font-size:10px;border-radius:7px}
+    .library-actions .rename{background:#f2f2f2;color:#111;border:1px solid #ddd}
+    .library-actions .delete{background:#fff1f1;color:#b00000;border:1px solid #ffcaca}
+    .library-badge{position:absolute;top:4px;left:4px;background:#111;color:#fff;border-radius:999px;padding:2px 6px;font-size:9px;font-weight:800}
+    .library-info{margin-top:8px;font-size:12px;color:#666}
+</style>
 </head>
 <body>
 <header>
@@ -172,6 +180,7 @@
             <label>Bibliothèque d’images intégrée</label>
             <div id="libraryGrid" class="library-grid"></div>
             <div id="imageChoiceStatus" class="hint" style="margin-top:8px">Touchez une image pour l’intégrer directement à l’affiche.</div>
+            <div id="libraryInfo" class="library-info"></div>
             <button type="button" class="green" id="applyLibraryImage" style="margin-top:8px;width:100%;display:none">Intégrer l’image sélectionnée à l’affiche</button>
           </div>
         </div>
@@ -261,7 +270,7 @@ let products = JSON.parse(localStorage.getItem("affiches-products") || "[]");
 let selected = -1;
 let photoData = "";
 
-const imageLibrary = [
+const builtinImageLibrary = [
   ["Pomme","https://commons.wikimedia.org/wiki/Special:Redirect/file/Apple-001.jpg?width=960"],
   ["Poire","https://commons.wikimedia.org/wiki/Special:Redirect/file/Rocha_Pear_2017_B2.jpg?width=960"],
   ["Banane","https://commons.wikimedia.org/wiki/Special:Redirect/file/Banana_on_white_background.jpg?width=960"],
@@ -276,7 +285,10 @@ const imageLibrary = [
   ["Poivron rouge","https://commons.wikimedia.org/wiki/Special:Redirect/file/Red-Pepper.jpg?width=960"],
   ["Pomme de terre","https://commons.wikimedia.org/wiki/Special:Redirect/file/Agriculture-72254.jpg?width=960"]
 ];
+let userImageLibrary = [];
+let hiddenBuiltinImages = JSON.parse(localStorage.getItem("hiddenBuiltinImages")||"[]");
 let selectedLibraryImage = "";
+let selectedLibraryName = "";
 function applyImageToPoster(src,name=""){
   photoData="";
   $("photoUrl").value=src||"";
@@ -284,18 +296,16 @@ function applyImageToPoster(src,name=""){
   $("imageChoiceStatus").textContent=src ? `Image intégrée : ${name||"image sélectionnée"}` : "Aucune image sélectionnée.";
   updatePreview();
 }
-function renderLibrary(){
-  const grid=$("libraryGrid");
-  grid.innerHTML=imageLibrary.map(([name,src])=>`<button type="button" class="library-item" data-name="${name}" data-src="${src}" title="Utiliser ${name}"><img src="${src}" alt="${name}"><span>${name}</span></button>`).join("");
-  grid.querySelectorAll(".library-item").forEach(btn=>btn.addEventListener("click",()=>{
-    selectedLibraryImage=btn.dataset.src;
-    grid.querySelectorAll(".library-item").forEach(x=>x.classList.remove("selected"));
-    btn.classList.add("selected");
-    $("applyLibraryImage").style.display="block";
-    $("imageChoiceStatus").textContent=`${btn.dataset.name} sélectionné — l’image est intégrée à l’affiche.`;
-    applyImageToPoster(btn.dataset.src,btn.dataset.name);
-  }));
-}
+function openImageDb(){return new Promise((resolve,reject)=>{const req=indexedDB.open("affichesMarcheImages",1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains("images"))db.createObjectStore("images",{keyPath:"id",autoIncrement:true});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
+async function loadUserImages(){try{const db=await openImageDb();userImageLibrary=await new Promise((resolve,reject)=>{const tx=db.transaction("images","readonly");const req=tx.objectStore("images").getAll();req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error);});db.close();}catch(e){console.error(e);userImageLibrary=[];}}
+async function addUserImage(name,dataUrl,originalBytes=0,finalBytes=0){const db=await openImageDb();await new Promise((resolve,reject)=>{const tx=db.transaction("images","readwrite");tx.objectStore("images").add({name,dataUrl,originalBytes,finalBytes,createdAt:Date.now()});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();await loadUserImages();renderLibrary();}
+async function renameUserImage(id,currentName){const next=prompt("Nouveau nom de la photo :",currentName||"");if(next===null||!next.trim())return;const db=await openImageDb();const tx=db.transaction("images","readwrite"),store=tx.objectStore("images");const item=await new Promise((resolve,reject)=>{const r=store.get(id);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});if(item){item.name=next.trim();store.put(item)}await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close();await loadUserImages();renderLibrary();}
+async function deleteUserImage(id,name){if(!confirm(`Supprimer "${name}" de la bibliothèque ?`))return;const db=await openImageDb();await new Promise((resolve,reject)=>{const tx=db.transaction("images","readwrite");tx.objectStore("images").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();await loadUserImages();renderLibrary();}
+function hideBuiltinImage(name){if(!confirm(`Retirer "${name}" de la bibliothèque ?`))return;if(!hiddenBuiltinImages.includes(name))hiddenBuiltinImages.push(name);localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));renderLibrary();}
+function renameBuiltinImage(name,src){const next=prompt("Nouveau nom de cette photo :",name);if(next===null||!next.trim())return;addUserImage(next.trim(),src).then(()=>{if(!hiddenBuiltinImages.includes(name))hiddenBuiltinImages.push(name);localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));renderLibrary();});}
+function humanBytes(n){if(!n)return "—";if(n<1024)return n+" o";if(n<1024*1024)return (n/1024).toFixed(0)+" Ko";return (n/1024/1024).toFixed(1)+" Mo";}
+function renderLibrary(){const grid=$("libraryGrid");const builtins=builtinImageLibrary.filter(([name])=>!hiddenBuiltinImages.includes(name)).map(([name,src])=>({kind:"builtin",name,src}));const customs=userImageLibrary.map(x=>({kind:"user",name:x.name,src:x.dataUrl,id:x.id,finalBytes:x.finalBytes}));const all=[...customs,...builtins];grid.innerHTML=all.map(item=>`<div class="library-item" data-name="${item.name.replace(/"/g,'&quot;')}" data-src="${item.src}" data-kind="${item.kind}" ${item.id?`data-id="${item.id}"`:""}>${item.kind==="user"?'<span class="library-badge">PERSO</span>':''}<img src="${item.src}" alt="${item.name}"><span>${item.name}</span>${item.kind==="user"&&item.finalBytes?`<div style="font-size:9px;color:#777">${humanBytes(item.finalBytes)}</div>`:''}<div class="library-actions"><button type="button" class="rename">Renommer</button><button type="button" class="delete">Supprimer</button></div></div>`).join("");$("libraryInfo").textContent=`${all.length} photo${all.length>1?"s":""} dans la bibliothèque, dont ${customs.length} personnelle${customs.length>1?"s":""}.`;grid.querySelectorAll(".library-item").forEach(card=>{card.querySelector("img").addEventListener("click",()=>{selectedLibraryImage=card.dataset.src;selectedLibraryName=card.dataset.name;grid.querySelectorAll(".library-item").forEach(x=>x.classList.remove("selected"));card.classList.add("selected");$("applyLibraryImage").style.display="block";applyImageToPoster(card.dataset.src,card.dataset.name);});card.querySelector(".rename").addEventListener("click",e=>{e.stopPropagation();card.dataset.kind==="user"?renameUserImage(Number(card.dataset.id),card.dataset.name):renameBuiltinImage(card.dataset.name,card.dataset.src);});card.querySelector(".delete").addEventListener("click",e=>{e.stopPropagation();card.dataset.kind==="user"?deleteUserImage(Number(card.dataset.id),card.dataset.name):hideBuiltinImage(card.dataset.name);});});}
+async function compressImageFile(file){const bitmap=await createImageBitmap(file);const maxSide=1200,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);if(bitmap.close)bitmap.close();let blob=await new Promise(r=>canvas.toBlob(r,"image/webp",0.78));if(!blob)blob=await new Promise(r=>canvas.toBlob(r,"image/jpeg",0.80));const dataUrl=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=()=>reject(fr.error);fr.readAsDataURL(blob);});return {dataUrl,originalBytes:file.size||0,finalBytes:blob.size};}
 function promoComputation(o){
   const base=Number(o.mainPrice), type=o.promoType;
   if(!Number.isFinite(base)||base<=0||type==="none") return {label:"",price:"",unit:"",summary:"Aucune promotion sélectionnée."};
@@ -421,24 +431,20 @@ fields.forEach(f=>$(f).addEventListener("input",updatePreview));
 }));
 ["logoIGP","logoAOP","logoLR"].forEach(id=>$(id).addEventListener("change",updatePreview));
 $("promoType").addEventListener("change",()=>{updatePromoFields();updatePreview()});
-$("applyLibraryImage").addEventListener("click",()=>{
-  if(!selectedLibraryImage)return;
-  const item=imageLibrary.find(x=>x[1]===selectedLibraryImage);
-  applyImageToPoster(selectedLibraryImage,item?item[0]:"");
-});
-$("photoFile").addEventListener("change",e=>{
+$("applyLibraryImage").addEventListener("click",()=>{if(selectedLibraryImage)applyImageToPoster(selectedLibraryImage,selectedLibraryName||"");});
+$("photoFile").addEventListener("change",async e=>{
   const file=e.target.files[0]; if(!file)return;
-  const r=new FileReader();
-  r.onload=()=>{
-    photoData=r.result;
-    $("photoUrl").value="";
-    selectedLibraryImage="";
-    document.querySelectorAll(".library-item").forEach(x=>x.classList.remove("selected"));
-    $("applyLibraryImage").style.display="none";
-    $("imageChoiceStatus").textContent=`Photo personnelle intégrée : ${file.name}`;
+  try{
+    $("imageChoiceStatus").textContent="Optimisation de la photo en cours…";
+    const result=await compressImageFile(file);
+    const baseName=(file.name||"Nouvelle photo").replace(/\.[^.]+$/,'');
+    let name=prompt("Nom de la photo dans la bibliothèque :",baseName); if(name===null)name=baseName; name=(name||baseName).trim()||baseName;
+    await addUserImage(name,result.dataUrl,result.originalBytes,result.finalBytes);
+    photoData=result.dataUrl; $("photoUrl").value=""; selectedLibraryImage=result.dataUrl; selectedLibraryName=name;
+    $("imageChoiceStatus").textContent=`${name} ajouté : ${humanBytes(result.originalBytes)} → ${humanBytes(result.finalBytes)}.`;
     updatePreview();
-  };
-  r.readAsDataURL(file);
+  }catch(err){console.error(err);alert("Impossible d’optimiser cette photo.");}
+  e.target.value="";
 });
 $("importFile").addEventListener("change",e=>{
   const file=e.target.files[0]; if(!file)return;
@@ -454,7 +460,7 @@ function exportData(){
 function clearAll(){if(confirm("Effacer tous les produits enregistrés ?")){products=[];persist();renderList();newProduct()}}
 function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
-renderLibrary();
+loadUserImages().then(()=>renderLibrary());
 if(products.length){selected=0;writeForm(products[0])}else{
   writeForm({name:"TOMATE",saleMode:"kg",mainPrice:"2.99",promoType:"none",origin:"FRANCE",category:"1",caliber:"",treatment:"",photoUrl:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Tomato_(1).jpg?width=960"});
 }
