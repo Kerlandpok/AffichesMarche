@@ -11,3 +11,9 @@ Cette version conserve le visuel V2 et ajoute :
 
 Pour GitHub, remplacez les fichiers existants par tout le contenu de ce ZIP,
 y compris le dossier images.
+
+
+CORRECTIF IMAGES
+- Correction du format XML des images SVG de la bibliothèque.
+- Nouvelle version du cache pour forcer l'actualisation sur Android.
+- Remplacer impérativement le dossier images ET le fichier sw.js sur GitHub.
