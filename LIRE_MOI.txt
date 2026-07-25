@@ -1,13 +1,20 @@
-AFFICHES MARCHÉ — V2.4 AFFICHE CORRIGÉE
+AFFICHES MARCHÉ — V2.5 AFFICHE PRO
 
-Correction principale :
-- l'affiche garde maintenant ses proportions de conception ;
-- sur téléphone, toute l'affiche est réduite d'un seul bloc ;
-- les textes et les prix ne se chevauchent plus ;
-- le rendu impression/PDF reste en A4.
+Refonte complète du visuel de l'affiche :
+- proportions fixes 760 × 1075, puis réduction proportionnelle sur téléphone ;
+- aucun élément n'est redimensionné indépendamment ;
+- titre avec logos qualité à droite ;
+- photo à gauche ;
+- prix principal à droite ;
+- promotion dans un bloc séparé ;
+- origine sur une grande zone dédiée ;
+- drapeau France placé à droite de FRANCE ;
+- catégorie, calibre et traitement dans un pied propre ;
+- adaptation automatique des textes trop longs ;
+- impression/PDF conservée au format A4.
 
-Sur GitHub, remplacer seulement :
+Pour GitHub, remplacer uniquement :
 - index.html
 - sw.js
 
-La mention en bas à droite doit afficher « V2.4 Affiche corrigée ».
+La mention en bas à droite doit afficher « V2.5 Affiche Pro ».
