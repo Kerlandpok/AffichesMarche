@@ -1,20 +1,18 @@
-AFFICHES MARCHÉ — V2.5 AFFICHE PRO
+AFFICHES MARCHÉ — V2.6 XIAOMI 14T MOBILE
 
-Refonte complète du visuel de l'affiche :
-- proportions fixes 760 × 1075, puis réduction proportionnelle sur téléphone ;
-- aucun élément n'est redimensionné indépendamment ;
-- titre avec logos qualité à droite ;
-- photo à gauche ;
-- prix principal à droite ;
-- promotion dans un bloc séparé ;
-- origine sur une grande zone dédiée ;
-- drapeau France placé à droite de FRANCE ;
-- catégorie, calibre et traitement dans un pied propre ;
-- adaptation automatique des textes trop longs ;
-- impression/PDF conservée au format A4.
+Cette version corrige l'adaptation au téléphone elle-même :
+- largeur basée directement sur l'écran du téléphone ;
+- recalcul du rendu lorsque l'onglet Affiche est ouvert ;
+- aucun calcul effectué sur un panneau masqué ;
+- affiche conservée à 760 × 1075 puis réduite proportionnellement ;
+- interface mobile sur toute la largeur ;
+- onglets Produits / Affiche / Sauvegarde de largeur égale ;
+- boutons et formulaires adaptés au tactile ;
+- bibliothèque plein écran ;
+- aucun débordement horizontal de l'application.
 
-Pour GitHub, remplacer uniquement :
+Sur GitHub, remplacer :
 - index.html
 - sw.js
 
-La mention en bas à droite doit afficher « V2.5 Affiche Pro ».
+Contrôle : « V2.6 Xiaomi 14T Mobile » doit apparaître en bas à droite.
