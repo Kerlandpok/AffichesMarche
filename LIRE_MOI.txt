@@ -1,18 +1,43 @@
-AFFICHES MARCHÉ — V2.6 XIAOMI 14T MOBILE
+AFFICHES MARCHÉ — V2.7 INTERFACE MODERNE
 
-Cette version corrige l'adaptation au téléphone elle-même :
-- largeur basée directement sur l'écran du téléphone ;
-- recalcul du rendu lorsque l'onglet Affiche est ouvert ;
-- aucun calcul effectué sur un panneau masqué ;
-- affiche conservée à 760 × 1075 puis réduite proportionnellement ;
-- interface mobile sur toute la largeur ;
-- onglets Produits / Affiche / Sauvegarde de largeur égale ;
-- boutons et formulaires adaptés au tactile ;
-- bibliothèque plein écran ;
-- aucun débordement horizontal de l'application.
+Réorganisation du formulaire :
+1. Désignation
+2. Variété
+3. Catégorie
+4. Calibre
+5. Traitement
+6. Labels qualité
+7. Mode de vente
+8. Prix unitaire
+9. Mécanique promotionnelle
+10. Origine
+11. Photo / bibliothèque
 
-Sur GitHub, remplacer :
-- index.html
-- sw.js
+Modes de vente :
+- La pièce
+- Le kg
+- Barquette de
+- Caissette de
+- Filet de
+- Sachet de
 
-Contrôle : « V2.6 Xiaomi 14T Mobile » doit apparaître en bas à droite.
+Pour Barquette / Caissette / Filet / Sachet :
+- poids ou quantité
+- unité : g, kg ou pièce(s)
+
+Mécanique promotionnelle :
+- présentation compacte
+- 2 ou 3 champs sur la même ligne selon la mécanique
+- X achetés + Y offerts
+- lot à prix spécial
+- promotion personnalisée
+
+Présentation :
+- cartes modernes
+- sections visuelles
+- champs plus propres
+- boutons et sélecteurs plus lisibles
+- toujours optimisée pour Xiaomi 14T
+
+Sur GitHub : remplacer index.html et sw.js.
+Contrôle : « V2.7 Interface moderne » en bas à droite.
