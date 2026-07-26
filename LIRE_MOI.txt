@@ -1,11 +1,15 @@
-AFFICHES MARCHÉ — V2.18
+AFFICHES MARCHÉ — V2.19 BIBLIOTHÈQUE SIMPLIFIÉE
 
-- La liste des affiches enregistrées reste maintenant visible directement sous la fiche produit.
-- Chaque ligne permet d'ouvrir immédiatement une affiche.
-- Une affiche peut également être supprimée depuis cette liste.
-- Le nombre d'affiches enregistrées est indiqué.
-- Bouton « Nouvelle affiche » accessible depuis la fiche.
-- Bouton « Gérer / PDF » pour retrouver la sélection multiple, création PDF et partage Gmail.
-- Les fonctions de la V2.17 sont conservées.
+La page principale est allégée :
+- la grande grille de bibliothèque disparaît de la fiche produit ;
+- la fiche affiche seulement un petit aperçu de l'image choisie ;
+- bouton « Choisir dans la bibliothèque » ;
+- bouton « Ajouter une photo » depuis la galerie ;
+- URL d'image reste disponible mais discrète ;
+- toute la gestion des images reste dans la fenêtre Bibliothèque :
+  familles, recherche, utiliser, renommer, déplacer et supprimer ;
+- la liste des affiches enregistrées reste visible sous la fiche produit.
 
-Sur GitHub : remplacer index.html et sw.js.
+Pour GitHub, remplacer :
+- index.html
+- sw.js

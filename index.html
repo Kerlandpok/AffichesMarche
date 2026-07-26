@@ -1262,6 +1262,94 @@ td.poster-actions button{font-size:11px!important;padding:6px 8px!important}
   }
 }
 
+
+/* ===== V2.19 — bibliothèque simplifiée sur la page principale ===== */
+.visual-product-card{
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:var(--soft);
+  padding:11px;
+}
+.visual-product-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 76px;
+  align-items:center;
+  gap:10px;
+}
+.visual-product-title{
+  font-size:14px;
+  font-weight:900;
+  color:var(--green-dark);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.visual-product-subtitle{
+  margin-top:3px;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.25;
+}
+.visual-preview-thumb{
+  width:76px;
+  height:76px;
+  border-radius:12px;
+  border:1px solid #d9e1dc;
+  background:#fff;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#8b938e;
+  font-size:10px;
+  font-weight:800;
+}
+.visual-preview-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:#fff;
+}
+.visual-product-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:10px;
+}
+.visual-product-actions button,
+.visual-product-actions .fileBtn{
+  width:100%;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:8px;
+  border-radius:11px;
+  font-size:12px;
+  font-weight:900;
+}
+.visual-add-btn{
+  background:#fff;
+  border:1px solid var(--line);
+  color:#111;
+}
+.visual-secondary{
+  margin-top:9px;
+}
+@media(max-width:760px){
+  .visual-product-head{
+    grid-template-columns:minmax(0,1fr) 68px;
+  }
+  .visual-preview-thumb{
+    width:68px;
+    height:68px;
+  }
+  .visual-product-actions{
+    grid-template-columns:1fr 1fr!important;
+  }
+}
+
 </style>
 <!-- BUILD: V2-FINALE-UNIFIEE-2026-07-24 -->
 
@@ -1269,7 +1357,7 @@ td.poster-actions button{font-size:11px!important;padding:6px 8px!important}
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 </head>
-<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.18 Liste toujours visible</div>
+<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.19 Bibliothèque simplifiée</div>
 <header>
   <h1>Affiches Marché</h1>
   <div class="toolbar">
@@ -1393,24 +1481,36 @@ td.poster-actions button{font-size:11px!important;padding:6px 8px!important}
             <input id="origin" placeholder="Ex. France">
           </label>
 
-          <label class="full">Photo du produit
-            <input id="photoFile" type="file" accept="image/*">
-          </label>
-
-          <label class="full">Ou URL de la photo
-            <input id="photoUrl" placeholder="https://...">
-          </label>
-
-          <div class="full">
-            <label>Bibliothèque d’images</label>
-            <div class="library-launch">
-              <button type="button" id="openLibraryBtn">📁 Ouvrir la bibliothèque</button>
-              <select id="familyQuickSelect" class="family-select"></select>
+          <div class="full visual-product-card">
+            <div class="visual-product-head">
+              <div>
+                <div class="visual-product-title">Visuel du produit</div>
+                <div class="visual-product-subtitle">Choisissez une image enregistrée ou ajoutez-en une depuis votre galerie.</div>
+              </div>
+              <div id="visualPreviewThumb" class="visual-preview-thumb">
+                <span>Aucune image</span>
+              </div>
             </div>
-            <div id="quickFamilyGrid" class="library-grid"></div>
-            <div id="imageChoiceStatus" class="hint" style="margin-top:8px">Choisissez une famille ou ouvrez la bibliothèque complète.</div>
-            <div id="libraryInfo" class="library-info"></div>
-            <button type="button" class="green" id="applyLibraryImage" style="margin-top:8px;width:100%;display:none">Intégrer l’image sélectionnée à l’affiche</button>
+
+            <div class="visual-product-actions">
+              <button type="button" id="openLibraryBtn" class="green">📁 Choisir dans la bibliothèque</button>
+              <label class="fileBtn visual-add-btn">＋ Ajouter une photo
+                <input id="photoFile" type="file" accept="image/*" hidden>
+              </label>
+            </div>
+
+            <div id="imageChoiceStatus" class="hint" style="margin-top:8px">Aucune image sélectionnée.</div>
+
+            <div class="visual-secondary">
+              <label style="margin:0">URL d’image (optionnel)
+                <input id="photoUrl" placeholder="https://...">
+              </label>
+            </div>
+
+            <button type="button" id="applyLibraryImage" style="display:none"></button>
+            <select id="familyQuickSelect" style="display:none"></select>
+            <div id="quickFamilyGrid" style="display:none"></div>
+            <div id="libraryInfo" style="display:none"></div>
           </div>
         </div>
 
@@ -1684,6 +1784,8 @@ function renderLibraryModal(){
       selectedLibraryImage=item.src;
       selectedLibraryName=item.name;
       applyImageToPoster(item.src,item.name);
+      $("imageChoiceStatus").textContent=`✓ ${item.name} sélectionnée.`;
+      updateVisualThumb();
       $("libraryModal").classList.remove("open");
     });
 
@@ -1718,6 +1820,8 @@ function renderLibraryModal(){
       selectedLibraryImage=item.src;
       selectedLibraryName=item.name;
       applyImageToPoster(item.src,item.name);
+      $("imageChoiceStatus").textContent=`✓ ${item.name} sélectionnée.`;
+      updateVisualThumb();
       $("libraryModal").classList.remove("open");
     });
 
@@ -2240,6 +2344,22 @@ function fitMainUnit(){
     el.style.transform=`scaleX(${scale})`;
   });
 }
+
+function updateVisualThumb(){
+  const box=$("visualPreviewThumb");
+  if(!box)return;
+  const src=photoData || $("photoUrl")?.value?.trim();
+  box.innerHTML="";
+  if(src){
+    const img=document.createElement("img");
+    img.src=src;
+    img.alt="Image sélectionnée";
+    img.onerror=()=>{box.innerHTML="<span>Image indisponible</span>"};
+    box.appendChild(img);
+  }else{
+    box.innerHTML="<span>Aucune image</span>";
+  }
+}
 function updatePreview(){
   const o=readForm();
   $("pName").textContent=o.name?o.name.toUpperCase():"";
@@ -2292,7 +2412,7 @@ function updatePreview(){
   $("pPhoto").hidden=!src; $("pPlaceholder").hidden=!!src;
   if(src){$("pPhoto").src=src}else{$("pPlaceholder").textContent="PHOTO DU PRODUIT"}
 
-  fitPosterTitle();fitOrigin();fitPromoPrice();fitPromoTexts();fitMainUnit();requestAnimationFrame(fitPosterToPhone);
+  updateVisualThumb();fitPosterTitle();fitOrigin();fitPromoPrice();fitPromoTexts();fitMainUnit();requestAnimationFrame(fitPosterToPhone);
 }
 function showTab(id){
   document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===id));
@@ -2388,6 +2508,7 @@ $("photoFile").addEventListener("change",async e=>{
       console.warn("Rafraîchissement bibliothèque :",refreshErr);
     }
 
+    updateVisualThumb();
     $("imageChoiceStatus").textContent=
       `✓ ${name} ajouté à la bibliothèque` +
       (result.finalBytes ? ` (${humanBytes(result.originalBytes)} → ${humanBytes(result.finalBytes)})` : "") +
