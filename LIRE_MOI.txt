@@ -1,17 +1,12 @@
-AFFICHES MARCHÉ — V2.9 MODÈLE VALIDÉ
+AFFICHES MARCHÉ — V2.9b
 
-Le modèle d'affiche est remplacé par le visuel validé :
-- Désignation en grand en haut.
-- Variété en vert sous la désignation.
-- Photo à gauche.
-- Prix unitaire à droite.
-- Promotion rouge pleine largeur.
-- Mécanique promo très grande.
-- Prix de revient à droite de la promotion.
-- Origine en grand.
-- Catégorie / calibre / traitement en bas, sans icônes.
-- Logos qualité à droite du titre si cochés.
+Modifications :
+- La zone promotion disparaît complètement lorsqu'aucune promotion n'est sélectionnée.
+- Sans promotion, l'espace est redistribué automatiquement dans l'affiche.
+- Si le traitement est vide, rien n'est affiché dans la case traitement.
+- À l'impression / PDF, seule l'affiche est imprimée.
+- Format d'impression : A4 portrait, sans marge.
 
-La bibliothèque et les fonctions existantes sont conservées.
-
-Pour GitHub : remplacer index.html et sw.js.
+Sur GitHub, remplacer :
+- index.html
+- sw.js
