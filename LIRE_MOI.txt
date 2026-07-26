@@ -1,13 +1,14 @@
-AFFICHES MARCHÉ — V2.13 PROMO KG
+AFFICHES MARCHÉ — V2.14
 
-Correction :
-- les mentions KG / PIÈCE / BARQUETTE / FILET / SACHET ne débordent plus de la zone promotion ;
-- le texte est comprimé uniquement en largeur si nécessaire ;
-- la hauteur des lettres est conservée ;
-- le prix promo reste grand et centré ;
-- en mode KG, la partie droite de la promo gagne légèrement en largeur ;
-- mécanique promo, OFFERT(S), prix et unité sont tous ajustés séparément.
+Corrections faites directement sur l'application :
+- zone promotion augmentée en hauteur ;
+- prix unitaire remonté légèrement ;
+- prix promo encore plus grand ;
+- mentions KG / PIÈCE mieux contenues dans la zone promo ;
+- mécanique 2+1 / OFFERT recentrée avec plus d'espace ;
+- pied conservé dans la page A4 ;
+- impression A4 seule conservée.
 
-Pour GitHub, remplacer :
+Sur GitHub, remplacer :
 - index.html
 - sw.js

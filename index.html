@@ -941,10 +941,108 @@ button.green{background:var(--green)!important;color:#fff!important}
   grid-template-columns:.95fr 1.05fr!important;
 }
 
+
+/* ===== V2.14 — promo plus haute + prix unitaire remonté ===== */
+
+/* Rééquilibrage vertical de l'affiche :
+   - le prix unitaire remonte légèrement ;
+   - la zone promo gagne de la hauteur ;
+   - le pied reste entièrement dans l'A4. */
+.poster{
+  grid-template-rows:130px 285px 205px 215px 125px 115px!important;
+}
+.poster.no-promo{
+  grid-template-rows:130px 345px 265px 205px 130px!important;
+}
+
+.poster-main{grid-row:2!important}
+.unit-price-card{grid-row:3!important}
+.promo-zone{grid-row:4!important}
+.origin-zone{grid-row:5!important}
+.footer-zone{grid-row:6!important}
+
+.poster.no-promo .origin-zone{grid-row:4!important}
+.poster.no-promo .footer-zone{grid-row:5!important}
+
+/* Le prix principal remonte dans sa zone */
+.unit-price-card{
+  justify-content:flex-start!important;
+  padding-top:2px!important;
+  padding-bottom:8px!important;
+}
+.unit-price-value{
+  margin-top:-4px!important;
+  align-self:center!important;
+}
+.unit-price-number{
+  font-size:132px!important;
+  line-height:.76!important;
+}
+.unit-price-euro{
+  font-size:64px!important;
+  margin-top:0!important;
+}
+.unit-price-mode{
+  margin-top:3px!important;
+  font-size:27px!important;
+}
+
+/* Promo : plus d'espace vertical réel */
+.promo-zone{
+  min-height:215px!important;
+}
+.promo-left,.promo-right{
+  padding:22px 10px 10px!important;
+  overflow:hidden!important;
+}
+.promo-mechanic{
+  font-size:88px!important;
+  line-height:.82!important;
+}
+.promo-mechanic-sub{
+  font-size:38px!important;
+  line-height:.95!important;
+  margin-top:8px!important;
+}
+.promo-right-label{
+  font-size:25px!important;
+  line-height:1!important;
+  margin-bottom:6px!important;
+}
+.promo-right-price{
+  font-size:122px!important;
+  line-height:.76!important;
+}
+.promo-right-unit{
+  font-size:24px!important;
+  line-height:.95!important;
+  margin-top:6px!important;
+  padding:0 4px!important;
+}
+
+/* Le ruban promotion reste au centre sans manger la place du texte */
+.promo-ribbon{
+  font-size:22px!important;
+  padding:5px 34px!important;
+}
+
+/* Pied légèrement compact pour garantir le format A4 */
+.footer-cell{
+  padding:4px 7px!important;
+}
+.footer-label{
+  font-size:16px!important;
+}
+.footer-value{
+  font-size:23px!important;
+  line-height:.95!important;
+  margin-top:3px!important;
+}
+
 </style>
 <!-- BUILD: V2-FINALE-UNIFIEE-2026-07-24 -->
 </head>
-<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.13 Promo KG corrigée</div>
+<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.14 Promo agrandie</div>
 <header>
   <h1>Affiches Marché</h1>
   <div class="toolbar">
@@ -1535,10 +1633,10 @@ function fitPromoTexts(){
   const left=zone.querySelector(".promo-left");
   const right=zone.querySelector(".promo-right");
 
-  fitTextX($("pPromoLabel"), Math.max(120,(left?.clientWidth||0)-22), .55);
-  fitTextX($("pPromoSub"), Math.max(120,(left?.clientWidth||0)-22), .65);
-  fitTextX($("pPromoPrice"), Math.max(140,(right?.clientWidth||0)-22), .55);
-  fitTextX($("pUnitPrice"), Math.max(120,(right?.clientWidth||0)-18), .48);
+  fitTextX($("pPromoLabel"), Math.max(130,(left?.clientWidth||0)-18), .52);
+  fitTextX($("pPromoSub"), Math.max(125,(left?.clientWidth||0)-18), .60);
+  fitTextX($("pPromoPrice"), Math.max(145,(right?.clientWidth||0)-18), .50);
+  fitTextX($("pUnitPrice"), Math.max(125,(right?.clientWidth||0)-12), .42);
 }
 function updatePreview(){
   const o=readForm();
