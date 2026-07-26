@@ -1,14 +1,12 @@
-AFFICHES MARCHÉ — V2.10 VERTICAL
+AFFICHES MARCHÉ — V2.11 A4 CORRIGÉ
 
-Modifications :
-- Sur l'affiche : image pleine largeur, puis prix pleine largeur juste dessous.
-- Le générateur s'ouvre avec les champs vides.
-- Les champs non renseignés restent vides dans l'aperçu.
-- Traitement : case « Avec traitement ».
-- Si la case n'est pas cochée, aucun traitement n'est affiché.
-- Sans traitement, le pied de l'affiche passe automatiquement à 2 colonnes : Catégorie / Calibre.
-- Avec traitement renseigné, le pied repasse à 3 colonnes.
-- Sans promotion, la zone promotion disparaît toujours.
-- Impression : uniquement l'affiche en A4 portrait.
+Corrections apportées à la V2.10 :
+- Le bas de l'affiche reste entièrement dans la page A4.
+- Suppression de la mention « PRIX UNITAIRE » sur l'affiche.
+- L'origine utilise des lettres de la même hauteur visuelle que le grand prix.
+- Pour les origines longues, seule la largeur du texte est comprimée.
+- Le prix promotionnel est fortement agrandi pour avoir la même importance visuelle que le prix normal.
+- Le prix promo est comprimé en largeur seulement si nécessaire.
+- L'impression reste limitée à l'affiche seule, en A4 portrait.
 
 Pour GitHub : remplacer index.html et sw.js.
