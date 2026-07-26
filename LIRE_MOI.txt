@@ -1,14 +1,13 @@
-AFFICHES MARCHÉ — V2.12 CENTRAGE
+AFFICHES MARCHÉ — V2.13 PROMO KG
 
-Correction directe de la V2.11 :
-- prix normal recentré ;
-- unité sous le prix recentrée ;
-- mécanique promotionnelle recentrée ;
-- prix promotionnel recentré ;
-- texte sous le prix promo recentré ;
-- origine recentrée indépendamment du badge ORIGINE ;
-- drapeau conservé à droite ;
-- catégorie, calibre et traitement recentrés dans leurs cases ;
-- format A4 et impression de l'affiche seule conservés.
+Correction :
+- les mentions KG / PIÈCE / BARQUETTE / FILET / SACHET ne débordent plus de la zone promotion ;
+- le texte est comprimé uniquement en largeur si nécessaire ;
+- la hauteur des lettres est conservée ;
+- le prix promo reste grand et centré ;
+- en mode KG, la partie droite de la promo gagne légèrement en largeur ;
+- mécanique promo, OFFERT(S), prix et unité sont tous ajustés séparément.
 
-Pour GitHub : remplacer index.html et sw.js.
+Pour GitHub, remplacer :
+- index.html
+- sw.js
