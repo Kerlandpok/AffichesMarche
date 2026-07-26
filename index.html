@@ -1182,6 +1182,86 @@ td.poster-actions button{font-size:11px!important;padding:6px 8px!important}
   }
 }
 
+
+/* ===== V2.18 — liste des affiches toujours visible sur la fiche ===== */
+.always-posters-card{
+  margin-top:12px!important;
+}
+.always-posters-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.always-posters-head h2{margin-bottom:6px!important}
+.product-posters-toolbar{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin:6px 0 10px;
+}
+.product-posters-list{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  max-height:300px;
+  overflow:auto;
+  padding-right:2px;
+}
+.product-poster-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:6px;
+  padding:8px 9px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+}
+.product-poster-row.current{
+  border:2px solid var(--green);
+  padding:7px 8px;
+}
+.product-poster-info{
+  min-width:0;
+}
+.product-poster-name{
+  font-weight:900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.product-poster-meta{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.product-poster-row button{
+  padding:6px 8px!important;
+  font-size:11px!important;
+}
+@media(max-width:760px){
+  .always-posters-card{
+    margin-top:10px!important;
+  }
+  .product-posters-list{
+    max-height:260px;
+  }
+  .product-poster-row{
+    grid-template-columns:minmax(0,1fr) auto auto;
+  }
+  .product-posters-toolbar{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .product-posters-toolbar button{
+    width:100%;
+  }
+}
+
 </style>
 <!-- BUILD: V2-FINALE-UNIFIEE-2026-07-24 -->
 
@@ -1189,7 +1269,7 @@ td.poster-actions button{font-size:11px!important;padding:6px 8px!important}
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 </head>
-<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.17 PDF multi</div>
+<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.18 Liste toujours visible</div>
 <header>
   <h1>Affiches Marché</h1>
   <div class="toolbar">
@@ -1351,7 +1431,20 @@ td.poster-actions button{font-size:11px!important;padding:6px 8px!important}
         </div>
       </div>
     </div>
-  </section>
+  
+<div class="card always-posters-card">
+  <div class="always-posters-head">
+    <h2>Affiches enregistrées</h2>
+    <span id="productPosterCount" class="hint"></span>
+  </div>
+  <div class="product-posters-toolbar">
+    <button type="button" class="mini dark" onclick="newProduct()">+ Nouvelle affiche</button>
+    <button type="button" class="mini green" onclick="showTab('listPanel')">Gérer / PDF</button>
+  </div>
+  <div class="product-posters-list" id="productPostersList"></div>
+</div>
+
+</section>
 
   <section id="previewPanel" class="panel">
     <div class="grid">
@@ -1799,6 +1892,30 @@ function deleteCurrent(){
 }
 function selectProduct(i){selected=i;writeForm(products[i]);renderList();showTab("previewPanel")}
 function persist(){localStorage.setItem("affiches-products",JSON.stringify(products))}
+
+function renderProductPostersList(){
+  const box=$("productPostersList");
+  const count=$("productPosterCount");
+  if(!box)return;
+
+  if(count)count.textContent=`${products.length} affiche${products.length>1?"s":""}`;
+
+  if(!products.length){
+    box.innerHTML='<div class="hint" style="padding:8px 2px">Aucune affiche enregistrée.</div>';
+    return;
+  }
+
+  box.innerHTML=products.map((p,i)=>`
+    <div class="product-poster-row ${i===selected?"current":""}">
+      <div class="product-poster-info" onclick="selectProduct(${i})">
+        <div class="product-poster-name">${escapeHtml(p.name||"Sans désignation")}</div>
+        <div class="product-poster-meta">${escapeHtml(p.origin||"")}${p.mainPrice!==""&&p.mainPrice!=null?" · "+euro(p.mainPrice)+" €":""}</div>
+      </div>
+      <button type="button" class="mini dark" onclick="selectProduct(${i})">Ouvrir</button>
+      <button type="button" class="mini red" onclick="deleteProductAt(${i})">Suppr.</button>
+    </div>`).join("");
+}
+
 function updatePosterSelectionInfo(){
   const n=selectedPosterIndices.size;
   const el=$("posterSelectionInfo");
@@ -1822,6 +1939,7 @@ function renderList(){
     </tr>`).join("") || `<tr><td colspan="5">Aucune affiche enregistrée.</td></tr>`;
 
   updatePosterSelectionInfo();
+  renderProductPostersList();
 }
 function togglePosterSelection(i,checked){
   if(checked)selectedPosterIndices.add(i);
