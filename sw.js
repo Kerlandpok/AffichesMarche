@@ -1,4 +1,4 @@
-const CACHE="affiches-marche-v2-7-interface-moderne-20260726";
+const CACHE="affiches-marche-v2-8-affiche-biblio-20260726";
 const ASSETS=["./","index.html","sw.js","logo-igp-officiel.jpg","logo-aop-officiel.jpg","logo-label-rouge-officiel.png"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));

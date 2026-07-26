@@ -1,43 +1,9 @@
-AFFICHES MARCHÉ — V2.7 INTERFACE MODERNE
-
-Réorganisation du formulaire :
-1. Désignation
-2. Variété
-3. Catégorie
-4. Calibre
-5. Traitement
-6. Labels qualité
-7. Mode de vente
-8. Prix unitaire
-9. Mécanique promotionnelle
-10. Origine
-11. Photo / bibliothèque
-
-Modes de vente :
-- La pièce
-- Le kg
-- Barquette de
-- Caissette de
-- Filet de
-- Sachet de
-
-Pour Barquette / Caissette / Filet / Sachet :
-- poids ou quantité
-- unité : g, kg ou pièce(s)
-
-Mécanique promotionnelle :
-- présentation compacte
-- 2 ou 3 champs sur la même ligne selon la mécanique
-- X achetés + Y offerts
-- lot à prix spécial
-- promotion personnalisée
-
-Présentation :
-- cartes modernes
-- sections visuelles
-- champs plus propres
-- boutons et sélecteurs plus lisibles
-- toujours optimisée pour Xiaomi 14T
-
-Sur GitHub : remplacer index.html et sw.js.
-Contrôle : « V2.7 Interface moderne » en bas à droite.
+V2.8
+- Désignation sur 2 lignes si nécessaire.
+- Variété visible sous la désignation.
+- Prix unitaire avec € derrière.
+- Promotion quantité en très grand.
+- Promotion avec prix agrandie.
+- Images de l'affiche sans déformation.
+- Bibliothèque téléphone en 2 colonnes avec images carrées adaptées.
+Remplacer index.html et sw.js sur GitHub.
