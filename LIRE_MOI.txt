@@ -1,9 +1,17 @@
-V2.8
-- Désignation sur 2 lignes si nécessaire.
-- Variété visible sous la désignation.
-- Prix unitaire avec € derrière.
-- Promotion quantité en très grand.
-- Promotion avec prix agrandie.
-- Images de l'affiche sans déformation.
-- Bibliothèque téléphone en 2 colonnes avec images carrées adaptées.
-Remplacer index.html et sw.js sur GitHub.
+AFFICHES MARCHÉ — V2.9 MODÈLE VALIDÉ
+
+Le modèle d'affiche est remplacé par le visuel validé :
+- Désignation en grand en haut.
+- Variété en vert sous la désignation.
+- Photo à gauche.
+- Prix unitaire à droite.
+- Promotion rouge pleine largeur.
+- Mécanique promo très grande.
+- Prix de revient à droite de la promotion.
+- Origine en grand.
+- Catégorie / calibre / traitement en bas, sans icônes.
+- Logos qualité à droite du titre si cochés.
+
+La bibliothèque et les fonctions existantes sont conservées.
+
+Pour GitHub : remplacer index.html et sw.js.
