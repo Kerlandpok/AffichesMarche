@@ -1,14 +1,11 @@
-AFFICHES MARCHÉ — V2.14
+AFFICHES MARCHÉ — V2.15
 
-Corrections faites directement sur l'application :
-- zone promotion augmentée en hauteur ;
-- prix unitaire remonté légèrement ;
-- prix promo encore plus grand ;
-- mentions KG / PIÈCE mieux contenues dans la zone promo ;
-- mécanique 2+1 / OFFERT recentrée avec plus d'espace ;
-- pied conservé dans la page A4 ;
-- impression A4 seule conservée.
+- unité déplacée à droite du prix ;
+- unité agrandie ;
+- zone prix unitaire moins haute ;
+- zone promotion plus haute ;
+- cartouche « PROMOTION » à nouveau visible ;
+- mécanique promo et prix promo agrandis ;
+- format A4 conservé.
 
-Sur GitHub, remplacer :
-- index.html
-- sw.js
+Sur GitHub, remplacer index.html et sw.js.
