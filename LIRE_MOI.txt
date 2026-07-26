@@ -1,15 +1,23 @@
-AFFICHES MARCHÉ — V2.16 BIBLIOTHÈQUE CORRIGÉE
+AFFICHES MARCHÉ — V2.17 PDF MULTI
 
-Corrections :
-- les boutons Renommer et Supprimer fonctionnent à nouveau dans la bibliothèque ;
-- les actions restent actives après un rafraîchissement de la bibliothèque ;
-- le déplacement entre familles est conservé ;
-- lors d'un ajout, l'application distingue désormais :
-  1. l'enregistrement réel de la photo ;
-  2. le simple rafraîchissement de l'interface ;
-- plus de faux message « impossible d'ajouter » quand la photo a bien été enregistrée ;
-- si la compression WebP échoue, la photo originale est enregistrée en secours ;
-- l'image ajoutée est immédiatement utilisable sur l'affiche.
+Nouveautés :
+- Si le calibre est vide, l'affiche affiche :
+  « Le goût du frais, ça se défend tous les jours ».
+- « Liste des produits » devient « Affiches ».
+- Chaque affiche peut être supprimée directement dans la liste.
+- Sélection multiple des affiches avec cases à cocher.
+- Bouton « Tout sélectionner ».
+- Bouton « Supprimer sélection ».
+- Création d'un PDF A4 multipage à partir des affiches sélectionnées.
+- Bouton « Envoyer par Gmail » :
+  sur Android, il ouvre la feuille de partage du téléphone avec le PDF en pièce jointe ;
+  il suffit de choisir Gmail.
+- En secours, si le partage de fichiers n'est pas pris en charge par le navigateur,
+  le PDF est téléchargé.
+
+IMPORTANT PDF :
+Le générateur utilise html2canvas et jsPDF chargés depuis jsDelivr.
+Une connexion Internet est nécessaire au premier chargement de ces modules.
 
 Pour GitHub, remplacer :
 - index.html

@@ -1144,10 +1144,52 @@ button.green{background:var(--green)!important;color:#fff!important}
 .footer-label{font-size:16px!important}
 .footer-value{font-size:23px!important;line-height:.95!important;margin-top:3px!important}
 
+
+/* ===== V2.17 — gestion des affiches / PDF ===== */
+.poster-list-toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-bottom:4px;
+}
+.poster-list-toolbar button{min-height:38px}
+.poster-select{
+  width:22px!important;
+  height:22px!important;
+  min-height:22px!important;
+  accent-color:var(--green);
+}
+td.poster-actions{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+td.poster-actions button{font-size:11px!important;padding:6px 8px!important}
+.slogan-value{
+  font-size:20px!important;
+  line-height:1.1!important;
+  text-transform:none!important;
+  font-style:italic!important;
+}
+@media(max-width:760px){
+  .poster-list-toolbar{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+  }
+  .poster-list-toolbar button{
+    width:100%!important;
+    min-height:42px!important;
+  }
+}
+
 </style>
 <!-- BUILD: V2-FINALE-UNIFIEE-2026-07-24 -->
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
 </head>
-<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.16 Bibliothèque corrigée</div>
+<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.17 PDF multi</div>
 <header>
   <h1>Affiches Marché</h1>
   <div class="toolbar">
@@ -1293,10 +1335,17 @@ button.green{background:var(--green)!important;color:#fff!important}
         </div>
 
       <div class="card">
-        <h2>Liste des produits</h2>
+        <h2>Affiches</h2>
+        <div class="poster-list-toolbar">
+          <button type="button" class="mini dark" onclick="toggleSelectAllPosters()">Tout sélectionner</button>
+          <button type="button" class="mini green" onclick="createSelectedPdf()">Créer PDF</button>
+          <button type="button" class="mini green" onclick="shareSelectedPdf()">Envoyer par Gmail</button>
+          <button type="button" class="mini red" onclick="deleteSelectedPosters()">Supprimer sélection</button>
+        </div>
+        <div id="posterSelectionInfo" class="hint" style="margin:8px 0">0 affiche sélectionnée</div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Produit</th><th>Origine</th><th>Prix</th><th>Action</th></tr></thead>
+            <thead><tr><th style="width:42px">✓</th><th>Affiche</th><th>Origine</th><th>Prix</th><th>Actions</th></tr></thead>
             <tbody id="productsBody"></tbody>
           </table>
         </div>
@@ -1344,7 +1393,7 @@ button.green{background:var(--green)!important;color:#fff!important}
 <div class="origin-zone"><div class="origin-badge">ORIGINE</div><div id="pOrigin" class="origin-name">PÉROU</div><span id="frFlag" class="origin-flag"></span></div>
 <div class="footer-zone">
   <div class="footer-cell"><div class="footer-label">CATÉGORIE</div><div id="pCategory" class="footer-value">1</div></div>
-  <div class="footer-cell"><div class="footer-label">CALIBRE</div><div id="pCaliber" class="footer-value">18/22</div></div>
+  <div class="footer-cell"><div id="pCaliberLabel" class="footer-label">CALIBRE</div><div id="pCaliber" class="footer-value">18/22</div></div>
   <div class="footer-cell treatment-cell"><div class="footer-label">TRAITEMENT</div><div id="pTreatment" class="footer-value">NON TRAITÉ APRÈS RÉCOLTE</div></div>
 </div>
 </div>
@@ -1372,6 +1421,7 @@ const fields = ["name","subtitle","category","caliber","treatment","mainPrice","
 let products = JSON.parse(localStorage.getItem("affiches-products") || "[]");
 let selected = -1;
 let photoData = "";
+const selectedPosterIndices = new Set();
 
 const builtinImageLibrary = [
   ["Pomme","https://commons.wikimedia.org/wiki/Special:Redirect/file/Apple-001.jpg?width=960"],
@@ -1738,18 +1788,227 @@ function duplicateCurrent(){
 }
 function deleteCurrent(){
   if(selected<0)return;
-  if(confirm("Supprimer ce produit ?")){products.splice(selected,1);selected=-1;persist();renderList();newProduct()}
+  if(confirm("Supprimer cette affiche ?")){
+    const i=selected;
+    products.splice(i,1);
+    const next=new Set();
+    [...selectedPosterIndices].forEach(x=>{if(x!==i)next.add(x>i?x-1:x)});
+    selectedPosterIndices.clear(); next.forEach(x=>selectedPosterIndices.add(x));
+    selected=-1;persist();renderList();newProduct();
+  }
 }
 function selectProduct(i){selected=i;writeForm(products[i]);renderList();showTab("previewPanel")}
 function persist(){localStorage.setItem("affiches-products",JSON.stringify(products))}
+function updatePosterSelectionInfo(){
+  const n=selectedPosterIndices.size;
+  const el=$("posterSelectionInfo");
+  if(el)el.textContent=`${n} affiche${n>1?"s":""} sélectionnée${n>1?"s":""}`;
+}
 function renderList(){
+  // Remove selections that no longer exist.
+  [...selectedPosterIndices].forEach(i=>{if(i<0||i>=products.length)selectedPosterIndices.delete(i)});
+
   $("productsBody").innerHTML=products.map((p,i)=>`
     <tr class="${i===selected?'selected':''}">
-      <td>${escapeHtml(p.name)}</td><td>${escapeHtml(p.origin||"")}</td>
-      <td>${euro(p.mainPrice)} €</td>
-      <td><button class="mini dark" onclick="selectProduct(${i})">Ouvrir</button></td>
-    </tr>`).join("") || `<tr><td colspan="4">Aucun produit enregistré.</td></tr>`;
+      <td><input class="poster-select" type="checkbox" ${selectedPosterIndices.has(i)?"checked":""}
+          onchange="togglePosterSelection(${i},this.checked)" aria-label="Sélectionner ${escapeHtml(p.name||"affiche")}"></td>
+      <td>${escapeHtml(p.name||"Sans désignation")}</td>
+      <td>${escapeHtml(p.origin||"")}</td>
+      <td>${p.mainPrice!==""&&p.mainPrice!=null?euro(p.mainPrice)+" €":""}</td>
+      <td class="poster-actions">
+        <button class="mini dark" onclick="selectProduct(${i})">Ouvrir</button>
+        <button class="mini red" onclick="deleteProductAt(${i})">Supprimer</button>
+      </td>
+    </tr>`).join("") || `<tr><td colspan="5">Aucune affiche enregistrée.</td></tr>`;
+
+  updatePosterSelectionInfo();
 }
+function togglePosterSelection(i,checked){
+  if(checked)selectedPosterIndices.add(i);
+  else selectedPosterIndices.delete(i);
+  updatePosterSelectionInfo();
+}
+function toggleSelectAllPosters(){
+  if(products.length===0)return;
+  if(selectedPosterIndices.size===products.length){
+    selectedPosterIndices.clear();
+  }else{
+    products.forEach((_,i)=>selectedPosterIndices.add(i));
+  }
+  renderList();
+}
+function deleteProductAt(i){
+  const p=products[i];
+  if(!p)return;
+  if(!confirm(`Supprimer l’affiche "${p.name||"Sans désignation"}" ?`))return;
+
+  products.splice(i,1);
+
+  // Reindex selections after deletion.
+  const next=new Set();
+  [...selectedPosterIndices].forEach(x=>{
+    if(x===i)return;
+    next.add(x>i?x-1:x);
+  });
+  selectedPosterIndices.clear();
+  next.forEach(x=>selectedPosterIndices.add(x));
+
+  if(selected===i)selected=-1;
+  else if(selected>i)selected--;
+
+  persist();
+  renderList();
+  if(selected<0)newProduct();
+}
+function deleteSelectedPosters(){
+  const indices=[...selectedPosterIndices].sort((a,b)=>b-a);
+  if(!indices.length){alert("Sélectionnez au moins une affiche.");return}
+  if(!confirm(`Supprimer ${indices.length} affiche${indices.length>1?"s":""} ?`))return;
+
+  indices.forEach(i=>products.splice(i,1));
+  selectedPosterIndices.clear();
+  selected=-1;
+  persist();
+  renderList();
+  newProduct();
+}
+
+function getSelectedPosterIndexes(){
+  const arr=[...selectedPosterIndices].filter(i=>i>=0&&i<products.length).sort((a,b)=>a-b);
+  if(!arr.length && selected>=0)arr.push(selected);
+  return arr;
+}
+function waitForPosterImage(){
+  return new Promise(resolve=>{
+    const img=$("pPhoto");
+    if(!img || img.hidden || !img.src || img.complete){setTimeout(resolve,120);return}
+    const done=()=>{img.removeEventListener("load",done);img.removeEventListener("error",done);setTimeout(resolve,100)};
+    img.addEventListener("load",done,{once:true});
+    img.addEventListener("error",done,{once:true});
+    setTimeout(done,1800);
+  });
+}
+async function ensurePdfLibraries(){
+  if(window.html2canvas && window.jspdf?.jsPDF)return true;
+  alert("Le module PDF n’est pas encore chargé. Vérifiez la connexion Internet puis réessayez.");
+  return false;
+}
+async function buildSelectedPdfBlob(){
+  const indexes=getSelectedPosterIndexes();
+  if(!indexes.length){
+    alert("Sélectionnez au moins une affiche.");
+    return null;
+  }
+  if(!(await ensurePdfLibraries()))return null;
+
+  const previousSelected=selected;
+  const previousForm=readForm();
+
+  // Show the preview during rendering.
+  showTab("previewPanel");
+  await new Promise(r=>setTimeout(r,120));
+
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+
+  for(let n=0;n<indexes.length;n++){
+    const i=indexes[n];
+    selected=i;
+    writeForm(products[i]);
+    updatePreview();
+    await waitForPosterImage();
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+
+    const poster=$("poster");
+    const oldTransform=poster.style.transform;
+    const oldPosition=poster.style.position;
+    const oldLeft=poster.style.left;
+    const oldTop=poster.style.top;
+
+    poster.style.transform="none";
+    poster.style.position="relative";
+    poster.style.left="0";
+    poster.style.top="0";
+
+    const canvas=await window.html2canvas(poster,{
+      scale:2,
+      backgroundColor:"#ffffff",
+      useCORS:true,
+      allowTaint:false,
+      logging:false,
+      width:poster.offsetWidth,
+      height:poster.offsetHeight
+    });
+
+    poster.style.transform=oldTransform;
+    poster.style.position=oldPosition;
+    poster.style.left=oldLeft;
+    poster.style.top=oldTop;
+
+    if(n>0)pdf.addPage("a4","portrait");
+    const imgData=canvas.toDataURL("image/jpeg",0.92);
+    pdf.addImage(imgData,"JPEG",0,0,210,297,undefined,"FAST");
+  }
+
+  // Restore user's current form.
+  selected=previousSelected;
+  if(previousSelected>=0 && products[previousSelected])writeForm(products[previousSelected]);
+  else writeForm(previousForm);
+  renderList();
+
+  return pdf.output("blob");
+}
+async function createSelectedPdf(){
+  try{
+    const blob=await buildSelectedPdfBlob();
+    if(!blob)return;
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=`affiches-marche-${new Date().toISOString().slice(0,10)}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+  }catch(err){
+    console.error("Création PDF :",err);
+    alert("Impossible de créer le PDF. Vérifiez les images puis réessayez.");
+  }
+}
+async function shareSelectedPdf(){
+  try{
+    const blob=await buildSelectedPdfBlob();
+    if(!blob)return;
+
+    const filename=`affiches-marche-${new Date().toISOString().slice(0,10)}.pdf`;
+    const file=new File([blob],filename,{type:"application/pdf"});
+
+    if(navigator.canShare?.({files:[file]}) && navigator.share){
+      await navigator.share({
+        title:"Affiches Marché",
+        text:"Affiches sélectionnées",
+        files:[file]
+      });
+      return;
+    }
+
+    // Fallback: download the PDF, then Gmail can attach it manually.
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+    alert("Le partage direct n’est pas disponible dans ce navigateur. Le PDF a été téléchargé : vous pouvez l’ajouter dans Gmail.");
+  }catch(err){
+    if(err?.name==="AbortError")return;
+    console.error("Partage PDF :",err);
+    alert("Impossible de partager le PDF.");
+  }
+}
+
 function fitOrigin(){
   const el=$("pOrigin"); if(!el)return;
   el.style.fontSize="126px";
@@ -1894,7 +2153,15 @@ function updatePreview(){
   $("pOrigin").textContent=origin;
   $("frFlag").style.display=origin==="FRANCE"?"inline-block":"none";
   $("pCategory").textContent=(o.category||"").toUpperCase();
-  $("pCaliber").textContent=(o.caliber||"").toUpperCase();
+  if(o.caliber){
+    $("pCaliberLabel").textContent="CALIBRE";
+    $("pCaliber").textContent=o.caliber.toUpperCase();
+    $("pCaliber").classList.remove("slogan-value");
+  }else{
+    $("pCaliberLabel").textContent="";
+    $("pCaliber").textContent="Le goût du frais, ça se défend tous les jours";
+    $("pCaliber").classList.add("slogan-value");
+  }
   const showTreatment=!!o.hasTreatment && !!o.treatment;
   $("pTreatment").textContent=showTreatment?o.treatment.toUpperCase():"";
   document.querySelector(".footer-zone")?.classList.toggle("no-treatment",!showTreatment);
