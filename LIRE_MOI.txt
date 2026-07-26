@@ -1,11 +1,16 @@
-AFFICHES MARCHÉ — V2.15
+AFFICHES MARCHÉ — V2.16 BIBLIOTHÈQUE CORRIGÉE
 
-- unité déplacée à droite du prix ;
-- unité agrandie ;
-- zone prix unitaire moins haute ;
-- zone promotion plus haute ;
-- cartouche « PROMOTION » à nouveau visible ;
-- mécanique promo et prix promo agrandis ;
-- format A4 conservé.
+Corrections :
+- les boutons Renommer et Supprimer fonctionnent à nouveau dans la bibliothèque ;
+- les actions restent actives après un rafraîchissement de la bibliothèque ;
+- le déplacement entre familles est conservé ;
+- lors d'un ajout, l'application distingue désormais :
+  1. l'enregistrement réel de la photo ;
+  2. le simple rafraîchissement de l'interface ;
+- plus de faux message « impossible d'ajouter » quand la photo a bien été enregistrée ;
+- si la compression WebP échoue, la photo originale est enregistrée en secours ;
+- l'image ajoutée est immédiatement utilisable sur l'affiche.
 
-Sur GitHub, remplacer index.html et sw.js.
+Pour GitHub, remplacer :
+- index.html
+- sw.js

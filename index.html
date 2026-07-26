@@ -1147,7 +1147,7 @@ button.green{background:var(--green)!important;color:#fff!important}
 </style>
 <!-- BUILD: V2-FINALE-UNIFIEE-2026-07-24 -->
 </head>
-<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.15 Prix + Promo</div>
+<body><div id="buildVersion" style="position:fixed;right:6px;bottom:6px;z-index:9999;font-size:9px;background:#111;color:#fff;padding:3px 6px;border-radius:5px;opacity:.65">V2.16 Bibliothèque corrigée</div>
 <header>
   <h1>Affiches Marché</h1>
   <div class="toolbar">
@@ -1419,24 +1419,36 @@ function applyImageToPoster(src,name=""){
 function openImageDb(){return new Promise((resolve,reject)=>{const req=indexedDB.open("affichesMarcheImages",1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains("images"))db.createObjectStore("images",{keyPath:"id",autoIncrement:true});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 async function loadUserImages(){try{const db=await openImageDb();userImageLibrary=await new Promise((resolve,reject)=>{const tx=db.transaction("images","readonly");const req=tx.objectStore("images").getAll();req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error);});db.close();}catch(e){console.error(e);userImageLibrary=[];}}
 async function addUserImage(name,dataUrl,originalBytes=0,finalBytes=0,family="Non classées"){const db=await openImageDb();await new Promise((resolve,reject)=>{const tx=db.transaction("images","readwrite");tx.objectStore("images").add({name,dataUrl,originalBytes,finalBytes,family,createdAt:Date.now()});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();await loadUserImages();renderLibrary();}
-async function renameUserImage(id,currentName){const next=prompt("Nouveau nom de la photo :",currentName||"");if(next===null||!next.trim())return;const db=await openImageDb();const tx=db.transaction("images","readwrite"),store=tx.objectStore("images");const item=await new Promise((resolve,reject)=>{const r=store.get(id);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});if(item){item.name=next.trim();store.put(item)}await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close();await loadUserImages();renderLibrary();}
-async function deleteUserImage(id,name){if(!confirm(`Supprimer "${name}" de la bibliothèque ?`))return;const db=await openImageDb();await new Promise((resolve,reject)=>{const tx=db.transaction("images","readwrite");tx.objectStore("images").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();await loadUserImages();renderLibrary();}
-function hideBuiltinImage(name){if(!confirm(`Retirer "${name}" de la bibliothèque ?`))return;if(!hiddenBuiltinImages.includes(name))hiddenBuiltinImages.push(name);localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));renderLibrary();}
-function renameBuiltinImage(name,src){const next=prompt("Nouveau nom de cette photo :",name);if(next===null||!next.trim())return;addUserImage(next.trim(),src).then(()=>{if(!hiddenBuiltinImages.includes(name))hiddenBuiltinImages.push(name);localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));renderLibrary();});}
+async function renameUserImage(id,currentName){
+  if(!Number.isFinite(Number(id)))throw new Error("Identifiant image invalide");
+  const next=prompt("Nouveau nom de la photo :",currentName||"");
+  if(next===null)return;
+  const clean=next.trim();
+  if(!clean)return;
 
-async function moveUserImage(id,family){
   const db=await openImageDb();
-  const tx=db.transaction("images","readwrite");
-  const store=tx.objectStore("images");
-  const item=await new Promise((resolve,reject)=>{
-    const r=store.get(id);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);
+  await new Promise((resolve,reject)=>{
+    const tx=db.transaction("images","readwrite");
+    const store=tx.objectStore("images");
+    const req=store.get(Number(id));
+
+    req.onsuccess=()=>{
+      const item=req.result;
+      if(!item){
+        reject(new Error("Image introuvable"));
+        return;
+      }
+      item.name=clean;
+      store.put(item);
+    };
+    req.onerror=()=>reject(req.error);
+    tx.oncomplete=resolve;
+    tx.onerror=()=>reject(tx.error);
   });
-  if(item){item.family=family;store.put(item)}
-  await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
   db.close();
+
   await loadUserImages();
   renderLibrary();
-  renderLibraryModal();
 }
 
 function humanBytes(n){if(!n)return "—";if(n<1024)return n+" o";if(n<1024*1024)return (n/1024).toFixed(0)+" Ko";return (n/1024/1024).toFixed(1)+" Mo";}
@@ -1493,51 +1505,147 @@ function renderFolderList(){
     list.appendChild(b);
   });
 }
+
 function renderLibraryModal(){
-  if(!$("modalLibraryGrid"))return;
+  const grid=$("modalLibraryGrid");
+  if(!grid)return;
+
   fillFamilySelects();
   renderFolderList();
-  const q=($("librarySearch").value||"").trim().toLowerCase();
+
+  const q=($("librarySearch")?.value||"").trim().toLowerCase();
   let items=getLibraryItems();
-  if(currentFolder!=="Toutes les images")items=items.filter(x=>x.family===currentFolder);
-  if(q)items=items.filter(x=>x.name.toLowerCase().includes(q));
+
+  if(currentFolder!=="Toutes les images"){
+    items=items.filter(x=>x.family===currentFolder);
+  }
+  if(q){
+    items=items.filter(x=>x.name.toLowerCase().includes(q));
+  }
+
   items.sort((a,b)=>a.name.localeCompare(b.name,"fr",{sensitivity:"base"}));
+
   $("libraryTitle").textContent=currentFolder;
   $("libraryCount").textContent=`${items.length} image${items.length>1?"s":""} — ordre alphabétique`;
-  const grid=$("modalLibraryGrid");
   grid.innerHTML="";
-  items.forEach(item=>{
-    const card=document.createElement("div");card.className="modal-item";
-    const img=document.createElement("img");img.src=item.src;img.alt=item.name;img.loading="lazy";
-    const name=document.createElement("div");name.className="name";name.textContent=item.name;
-    const fam=document.createElement("div");fam.className="family-chip";fam.textContent=item.family;
-    const actions=document.createElement("div");actions.className="small-actions";
-    const use=document.createElement("button");use.type="button";use.textContent="Utiliser";
-    const rename=document.createElement("button");rename.type="button";rename.textContent="Renommer";
-    const move=document.createElement("button");move.type="button";move.textContent="Déplacer";
-    const del=document.createElement("button");del.type="button";del.textContent="Supprimer";
+
+  for(const item of items){
+    const card=document.createElement("div");
+    card.className="modal-item";
+
+    const img=document.createElement("img");
+    img.src=item.src;
+    img.alt=item.name;
+    img.loading="lazy";
+    img.addEventListener("click",()=>{
+      selectedLibraryImage=item.src;
+      selectedLibraryName=item.name;
+      applyImageToPoster(item.src,item.name);
+      $("libraryModal").classList.remove("open");
+    });
+
+    const name=document.createElement("div");
+    name.className="name";
+    name.textContent=item.name;
+
+    const fam=document.createElement("div");
+    fam.className="family-chip";
+    fam.textContent=item.family||"Non classées";
+
+    const actions=document.createElement("div");
+    actions.className="small-actions";
+
+    const use=document.createElement("button");
+    use.type="button";
+    use.textContent="Utiliser";
+
+    const rename=document.createElement("button");
+    rename.type="button";
+    rename.textContent="Renommer";
+
+    const move=document.createElement("button");
+    move.type="button";
+    move.textContent="Déplacer";
+
+    const del=document.createElement("button");
+    del.type="button";
+    del.textContent="Supprimer";
+
+    use.addEventListener("click",()=>{
+      selectedLibraryImage=item.src;
+      selectedLibraryName=item.name;
+      applyImageToPoster(item.src,item.name);
+      $("libraryModal").classList.remove("open");
+    });
+
+    rename.addEventListener("click",async()=>{
+      try{
+        if(item.kind==="user"){
+          await renameUserImage(Number(item.id),item.name);
+        }else{
+          await renameBuiltinImage(item.name,item.src);
+        }
+        await loadUserImages();
+        renderLibrary();
+        renderLibraryModal();
+      }catch(err){
+        console.error("Renommage image :",err);
+        alert("Impossible de renommer cette image.");
+      }
+    });
+
+    move.addEventListener("click",async()=>{
+      const opts=["Non classées",...allFolders()];
+      const next=prompt("Déplacer vers quelle famille ?\n\n"+opts.join("\n"),item.family||"Non classées");
+      if(next===null)return;
+      const clean=next.trim();
+      if(!clean)return;
+
+      if(clean!=="Non classées"&&!allFolders().includes(clean)){
+        customFolders.push(clean);
+        customFolders=[...new Set(customFolders)];
+        saveFolders();
+      }
+
+      try{
+        if(item.kind==="user"){
+          await moveUserImage(Number(item.id),clean);
+        }else{
+          await addUserImage(item.name,item.src,0,0,clean);
+          if(!hiddenBuiltinImages.includes(item.name))hiddenBuiltinImages.push(item.name);
+          localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));
+        }
+        await loadUserImages();
+        renderLibrary();
+        renderLibraryModal();
+      }catch(err){
+        console.error("Déplacement image :",err);
+        alert("Impossible de déplacer cette image.");
+      }
+    });
+
+    del.addEventListener("click",async()=>{
+      try{
+        if(item.kind==="user"){
+          await deleteUserImage(Number(item.id),item.name);
+        }else{
+          hideBuiltinImage(item.name);
+        }
+        await loadUserImages();
+        renderLibrary();
+        renderLibraryModal();
+      }catch(err){
+        console.error("Suppression image :",err);
+        alert("Impossible de supprimer cette image.");
+      }
+    });
+
     actions.append(use,rename,move,del);
     card.append(img,name,fam,actions);
-    use.onclick=()=>{selectedLibraryImage=item.src;selectedLibraryName=item.name;applyImageToPoster(item.src,item.name);$("libraryModal").classList.remove("open")};
-    rename.onclick=()=>item.kind==="user"?renameUserImage(Number(item.id),item.name):renameBuiltinImage(item.name,item.src);
-    move.onclick=async()=>{
-      const opts=["Non classées",...allFolders()];
-      const next=prompt("Déplacer vers quelle famille ?\n\n"+opts.join("\n"),item.family);
-      if(next===null)return;
-      const clean=next.trim();if(!clean)return;
-      if(!opts.includes(clean)&&clean!=="Non classées"){customFolders.push(clean);customFolders=[...new Set(customFolders)];saveFolders()}
-      if(item.kind==="user")await moveUserImage(Number(item.id),clean);
-      else{
-        await addUserImage(item.name,item.src,0,0,clean);
-        if(!hiddenBuiltinImages.includes(item.name))hiddenBuiltinImages.push(item.name);
-        localStorage.setItem("hiddenBuiltinImages",JSON.stringify(hiddenBuiltinImages));
-        await loadUserImages();renderLibrary();renderLibraryModal();
-      }
-    };
-    del.onclick=()=>item.kind==="user"?deleteUserImage(Number(item.id),item.name):hideBuiltinImage(item.name);
     grid.appendChild(card);
-  });
+  }
 }
+
 async function compressImageFile(file){const bitmap=await createImageBitmap(file);const maxSide=1200,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);if(bitmap.close)bitmap.close();let blob=await new Promise(r=>canvas.toBlob(r,"image/webp",0.78));if(!blob)blob=await new Promise(r=>canvas.toBlob(r,"image/jpeg",0.80));const dataUrl=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=()=>reject(fr.error);fr.readAsDataURL(blob);});return {dataUrl,originalBytes:file.size||0,finalBytes:blob.size};}
 function promoComputation(o){
   const base=Number(o.mainPrice), type=o.promoType;
@@ -1824,53 +1932,91 @@ document.querySelectorAll('input[name="saleType"]').forEach(r=>r.addEventListene
 $("promoType").addEventListener("change",()=>{updatePromoFields();updatePreview()});
 $("applyLibraryImage").addEventListener("click",()=>{if(selectedLibraryImage)applyImageToPoster(selectedLibraryImage,selectedLibraryName||"");});
 $("photoFile").addEventListener("change",async e=>{
-  const file=e.target.files[0];
+  const file=e.target.files?.[0];
   if(!file)return;
 
+  let saved=false;
+
   try{
-    $("imageChoiceStatus").textContent="Optimisation et ajout à la bibliothèque…";
+    $("imageChoiceStatus").textContent="Optimisation de la photo…";
 
-    const result=await compressImageFile(file);
-    const baseName=(file.name||"Nouvelle photo").replace(/\.[^.]+$/,"");
-    let name=prompt("Nom de la photo dans la bibliothèque :",baseName);
-    if(name===null) name=baseName;
-    name=(name||baseName).trim()||baseName;
-
-    let folder=prompt("Dans quelle famille classer cette photo ?", currentFolder==="Toutes les images"?"Non classées":currentFolder);
-    if(folder===null)folder="Non classées";
-    folder=(folder||"Non classées").trim()||"Non classées";
-    if(folder!=="Non classées"&&!allFolders().includes(folder)){customFolders.push(folder);customFolders=[...new Set(customFolders)];saveFolders()}
-    await addUserImage(name,result.dataUrl,result.originalBytes,result.finalBytes,folder);
-
-    // Recharge explicitement la base puis redessine la bibliothèque.
-    await loadUserImages();
-    renderLibrary();
-
-    const created=[...userImageLibrary]
-      .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))
-      .find(x=>x.name===name) || userImageLibrary[userImageLibrary.length-1];
-
-    const src=created?.dataUrl || result.dataUrl;
-    photoData=src;
-    $("photoUrl").value="";
-    selectedLibraryImage=src;
-    selectedLibraryName=name;
-
-    $("imageChoiceStatus").textContent=
-      `✓ ${name} ajouté à la bibliothèque (${humanBytes(result.originalBytes)} → ${humanBytes(result.finalBytes)}).`;
-
-    // Sélection visuelle de la nouvelle photo.
-    const cards=[...$("libraryGrid").querySelectorAll(".library-item")];
-    const customCards=cards.filter(c=>c.dataset.kind==="user");
-    if(customCards.length){
-      customCards[0].classList.add("selected");
+    let result;
+    try{
+      result=await compressImageFile(file);
+    }catch(compressErr){
+      console.warn("Compression impossible, stockage original :",compressErr);
+      const dataUrl=await new Promise((resolve,reject)=>{
+        const r=new FileReader();
+        r.onload=()=>resolve(r.result);
+        r.onerror=()=>reject(r.error);
+        r.readAsDataURL(file);
+      });
+      result={
+        dataUrl,
+        originalBytes:file.size||0,
+        finalBytes:file.size||0
+      };
     }
 
+    const baseName=(file.name||"Nouvelle photo").replace(/\.[^.]+$/,"");
+    let name=prompt("Nom de la photo dans la bibliothèque :",baseName);
+    if(name===null)name=baseName;
+    name=(name||baseName).trim()||baseName;
+
+    let folder=prompt(
+      "Dans quelle famille classer cette photo ?",
+      currentFolder==="Toutes les images"?"Non classées":currentFolder
+    );
+    if(folder===null)folder="Non classées";
+    folder=(folder||"Non classées").trim()||"Non classées";
+
+    if(folder!=="Non classées"&&!allFolders().includes(folder)){
+      customFolders.push(folder);
+      customFolders=[...new Set(customFolders)];
+      saveFolders();
+    }
+
+    // Étape critique : une fois celle-ci réussie, l'image est bien enregistrée.
+    await addUserImage(
+      name,
+      result.dataUrl,
+      result.originalBytes||file.size||0,
+      result.finalBytes||file.size||0,
+      folder
+    );
+    saved=true;
+
+    // L'image devient immédiatement l'image courante de l'affiche.
+    photoData=result.dataUrl;
+    $("photoUrl").value="";
+    selectedLibraryImage=result.dataUrl;
+    selectedLibraryName=name;
     updatePreview();
+
+    // Les rafraîchissements UI sont secondaires : une erreur ici ne doit
+    // jamais annoncer à tort que l'ajout a échoué.
+    try{
+      await loadUserImages();
+      renderLibrary();
+      if($("libraryModal")?.classList.contains("open"))renderLibraryModal();
+    }catch(refreshErr){
+      console.warn("Rafraîchissement bibliothèque :",refreshErr);
+    }
+
+    $("imageChoiceStatus").textContent=
+      `✓ ${name} ajouté à la bibliothèque` +
+      (result.finalBytes ? ` (${humanBytes(result.originalBytes)} → ${humanBytes(result.finalBytes)})` : "") +
+      ".";
+
   }catch(err){
     console.error("Ajout photo :",err);
-    alert("La photo n’a pas pu être ajoutée à la bibliothèque. Réessayez avec une autre image.");
-    $("imageChoiceStatus").textContent="Échec de l’ajout de la photo.";
+
+    if(saved){
+      $("imageChoiceStatus").textContent="✓ Photo ajoutée à la bibliothèque.";
+    }else{
+      $("imageChoiceStatus").textContent="Échec de l’ajout de la photo.";
+      alert("Impossible d’ajouter cette photo à la bibliothèque.");
+    }
   }finally{
     e.target.value="";
   }
