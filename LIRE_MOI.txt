@@ -1,12 +1,14 @@
-AFFICHES MARCHÉ — V2.11 A4 CORRIGÉ
+AFFICHES MARCHÉ — V2.12 CENTRAGE
 
-Corrections apportées à la V2.10 :
-- Le bas de l'affiche reste entièrement dans la page A4.
-- Suppression de la mention « PRIX UNITAIRE » sur l'affiche.
-- L'origine utilise des lettres de la même hauteur visuelle que le grand prix.
-- Pour les origines longues, seule la largeur du texte est comprimée.
-- Le prix promotionnel est fortement agrandi pour avoir la même importance visuelle que le prix normal.
-- Le prix promo est comprimé en largeur seulement si nécessaire.
-- L'impression reste limitée à l'affiche seule, en A4 portrait.
+Correction directe de la V2.11 :
+- prix normal recentré ;
+- unité sous le prix recentrée ;
+- mécanique promotionnelle recentrée ;
+- prix promotionnel recentré ;
+- texte sous le prix promo recentré ;
+- origine recentrée indépendamment du badge ORIGINE ;
+- drapeau conservé à droite ;
+- catégorie, calibre et traitement recentrés dans leurs cases ;
+- format A4 et impression de l'affiche seule conservés.
 
 Pour GitHub : remplacer index.html et sw.js.
