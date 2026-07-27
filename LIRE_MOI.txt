@@ -1,15 +1,11 @@
-AFFICHES MARCHÉ — V2.19 BIBLIOTHÈQUE SIMPLIFIÉE
+AFFICHES MARCHÉ — V2.20 PAGE PRINCIPALE
 
-La page principale est allégée :
-- la grande grille de bibliothèque disparaît de la fiche produit ;
-- la fiche affiche seulement un petit aperçu de l'image choisie ;
-- bouton « Choisir dans la bibliothèque » ;
-- bouton « Ajouter une photo » depuis la galerie ;
-- URL d'image reste disponible mais discrète ;
-- toute la gestion des images reste dans la fenêtre Bibliothèque :
-  familles, recherche, utiliser, renommer, déplacer et supprimer ;
-- la liste des affiches enregistrées reste visible sous la fiche produit.
+- Exemples dans les champs beaucoup plus clairs.
+- Origine déplacée juste après Calibre.
+- Famille placée dans l'espace Bibliothèque.
+- La famille choisie sert de filtre à l'ouverture de la bibliothèque.
+- Images de la bibliothèque plus petites.
+- Sur téléphone : 3 images par ligne.
+- Page principale toujours allégée.
 
-Pour GitHub, remplacer :
-- index.html
-- sw.js
+Sur GitHub : remplacer index.html et sw.js.
